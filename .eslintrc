@@ -7,7 +7,7 @@
 	],
 	"plugins": ["@typescript-eslint"],
 	"parserOptions": {
-		"project": "./tests.tsconfig.json"
+		"project": "./tsconfig.json"
 	},
 	"rules": {
 		// Enforce the consistent use of either backticks, double, or single quotes
@@ -34,10 +34,5 @@
 		// Error on declared but not used variable
 		"@typescript-eslint/no-unused-vars": "error"		
 		// "@typescript-eslint/no-var-requires": "off"		
-	},
-	"overrides": [
-		{
-		  "files": ["src/"]		  
-		}
-	  ]
+	}
 }

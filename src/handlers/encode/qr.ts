@@ -36,7 +36,7 @@ export default async (
 				? args?.template
 				: DefaultQRTemplate;
 
-		const qrCode = createQRCode(url, template);
+		const qrCode = await createQRCode(url, template);
 
 		if (args?.styles) {
 			let extendedStyle = {};

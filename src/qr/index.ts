@@ -1,5 +1,5 @@
 import 'node-self';
-import QRCode from 'easyqrcodejs-nodejs';
+//import QRCode from 'easyqrcodejs-nodejs';
 import convert from 'data-uri-to-buffer';
 import Style, { size } from '../config/styles';
 import Canvas from 'canvas';
@@ -40,22 +40,28 @@ export const getBackground = async (width: number = size) => {
 	return Promise.reject(new Error('Canvas not available'));
 };
 
-class QRCodeWrapper extends QRCode {
-	private _htOption!: ObjectType;
 
-	constructor(options: ObjectType) {
-		super(options);
+
+export default async function createQRCode(text: string, template = 'default') {
+
+	const QRCode = await import('easyqrcodejs-nodejs').then(d=>d.default);
+
+	class QRCodeWrapper extends QRCode {
+		private _htOption!: ObjectType;
+	
+		constructor(options: ObjectType) {
+			super(options);
+		}
+	
+		changeStyles(styles: ObjectType) {
+			this._htOption = {
+				...(this._htOption || {}),
+				...styles,
+			};
+		}
 	}
 
-	changeStyles(styles: ObjectType) {
-		this._htOption = {
-			...(this._htOption || {}),
-			...styles,
-		};
-	}
-}
 
-export default function createQRCode(text: string, template = 'default') {
 	registerFont(fontURL, { family: 'Abstract' });
 	const style = Style[template];
 	const qrCode = new QRCodeWrapper({
