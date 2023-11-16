@@ -72,6 +72,8 @@
 		"typescript": "^4.4.4"
 	},
 	"dependencies": {
+		"@babel/core": "^7.23.3",
+		"@babel/runtime": "^7.23.2",
 		"chai": "^4.3.6",
 		"data-uri-to-buffer": "^3.0.1",
 		"easyqrcodejs-nodejs": "^4.4.5",
