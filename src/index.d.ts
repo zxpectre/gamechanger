@@ -6,4 +6,4 @@ declare module 'node-canvas';
 declare module 'data-uri-to-buffer';
 declare module 'canvas';
 declare module 'path';
-declare module 'easyqrcodejs-nodejs';
+//declare module 'easyqrcodejs-nodejs';
