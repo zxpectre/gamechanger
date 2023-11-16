@@ -24,7 +24,7 @@
 		"types": ["node", "mocha"],
 		"rootDirs": ["src"]
 	},
-	"exclude": ["src/types","src/tests"],
+	"exclude": ["src/types"],
 	"include": ["src"],
 	"ts-node": {
 		"transpileOnly": true,
