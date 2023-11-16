@@ -1,3 +1,4 @@
+import { DefaultQRSubTitle, DefaultQRTitle } from '../types';
 import { resolveGlobal } from '../utils';
 
 const logoURL = resolveGlobal('../assets/images/dapp-logo-bg.png');
@@ -19,6 +20,7 @@ const defaultTemplate = {
 	logoBackgroundTransparent: true,
 	backgroundImage: backgroundURL,
 	autoColor: false,
+	quietZone: 60,
 };
 
 type StyleType = {
@@ -26,20 +28,20 @@ type StyleType = {
 };
 
 const styles: StyleType = {
-	default: defaultTemplate,
+	//default: defaultTemplate,
 	boxed: {
 		...defaultTemplate,
 		quietZone: 60,
 		quietZoneColor: 'rgba(0,0,0,0)',
-		title: 'GAME CHANGER',
-		subTitle: '-Dapp Connector-',
+		title: DefaultQRTitle,
+		subTitle: DefaultQRSubTitle,
 		titleTop: -25,
 		subTitleTop: -8,
 		titleHeight: 0,
 		titleBackgroundColor: 'rgba(0,0,0,0)',
-		titleColor: '#ffffff',
-		subTitleColor: '#ffffff',
-		titleFont: 'normal normal bold 16px Abstract',
+		titleColor: '#111111',
+		subTitleColor: '#222222',
+		titleFont: 'normal normal bold 12px Abstract',
 		subTitleFont: 'normal normal bold 9px Abstract',
 	},
 	printable: {
@@ -50,8 +52,8 @@ const styles: StyleType = {
 		colorDark: '#000000',
 		colorLight: '#ffffff',
 		backgroundImage: undefined,
-		title: 'GAME CHANGER',
-		subTitle: '-Dapp Connector-',
+		title: DefaultQRTitle,
+		subTitle: DefaultQRSubTitle,
 		quietZone: 60,
 		quietZoneColor: 'rgba(0,0,0,0)',
 		titleTop: -25,
@@ -60,7 +62,7 @@ const styles: StyleType = {
 		titleBackgroundColor: '#ffffff',
 		titleColor: '#000000',
 		subTitleColor: '#000000',
-		titleFont: 'normal normal bold 16px Abstract',
+		titleFont: 'normal normal bold 12px Abstract',
 		subTitleFont: 'normal normal bold 9px Abstract',
 	},
 };

@@ -3,14 +3,19 @@
 	"version": "0.0.18",
 	"description": "Command line interface for creating ready to use dApps for Cardano with GameChanger Wallet (https://gamechanger.finance/)",
 	"license": "MIT",
-	"repository": "BlockwideTeam/gamechanger-dapp-cli",
+	"repository": "github:zxpectre/gamechanger",
 	"author": {
 		"name": "Javier Ribó, Adriano Fiorenza",
 		"email": "info@gamechanger.finance",
 		"url": "https://gamechanger.finance/"
 	},
+	"exports": {
+		"import": "./dist/index.js",
+		"require": "./dist/index.js"
+	},
+	"jsdelivr": "./dist/index.js",
 	"bin": {
-		"gamechanger-dapp-cli": "dist/cli.js"
+		"gamechanger-cli": "dist/cli.js"
 	},
 	"engines": {
 		"node": ">=12"
@@ -73,10 +78,14 @@
 		"easyqrcodejs-nodejs": "^4.4.3",
 		"fs": "0.0.1-security",
 		"get-stdin": "^8.0.0",
+		"json-stringify-safe": "^5.0.1",
 		"json-url": "^3.0.0",
 		"meow": "^9.0.0",
 		"node-self": "^1.0.0-d",
+		"pako": "^2.1.0",
 		"path": "^0.12.7",
-		"stream": "0.0.2"
+		"stream": "0.0.2",
+		"string-placeholder": "^1.0.2",
+		"urlsafe-base64": "^1.0.0"
 	}
 }

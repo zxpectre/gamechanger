@@ -1,11 +1,13 @@
 import { expect } from 'chai';
-import UrlHandler from '../handlers/url';
+import handlers from '../index';
 
 describe('GameChanger DAPP CLI', () => {
 	it('should build the correct url for the demo.gcs script', async () => {
-		const url = await UrlHandler({
+		const url = await handlers.encode.url({
+			apiVersion:'1',
 			network: 'mainnet',
-			inputData: `{
+			encoding:'json-url-lzw',
+			input: `{
 			"type": "tx",
 			"title": "Demo",
 			"description": "created with gamechanger-dapp-cli",
