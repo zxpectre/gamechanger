@@ -1,7 +1,8 @@
 import { EncodingHandler } from '../types'
 import { Buffer } from 'buffer'
 import safeJSONStringify from 'json-stringify-safe'
-import URLSafeBase64 from 'urlsafe-base64'
+//import URLSafeBase64 from 'urlsafe-base64'
+import * as URLSafeBase64 from '../modules/urlsafe-base64'
 import pako from 'pako'
 
 // //@typescript-eslint/no-var-requires
@@ -47,7 +48,7 @@ const handler: EncodingHandler = {
         //const pako = await import('pako').then((d) => d.default)
         const buff = Buffer.from(
           pako.ungzip(
-            Buffer.from(URLSafeBase64.decode(msg), 'utf-8'),
+            Buffer.from(URLSafeBase64.decode(msg).toString('utf-8'), 'utf-8'),
             options?.codecOptions || {}
           )
         )

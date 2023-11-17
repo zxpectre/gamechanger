@@ -1,4 +1,5 @@
 module.exports = {
+  ignorePatterns: ['bin/*'],
   root: true,
   extends: ['eslint:recommended', 'prettier'],
   parserOptions: {

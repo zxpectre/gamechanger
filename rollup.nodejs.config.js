@@ -1,4 +1,4 @@
-import terser from '@rollup/plugin-terser'
+//import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 //import typescript from 'rollup-plugin-typescript2'
 import CommonJS from '@rollup/plugin-commonjs'
@@ -12,8 +12,8 @@ import json from '@rollup/plugin-json'
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'dist/index.umd.js',
-    format: 'umd',
+    file: 'dist/index.cjs',
+    format: 'cjs', //'es'
     name: 'window',
     extend: true,
     inlineDynamicImports: true //Solves: Invalid value "umd" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
@@ -36,29 +36,34 @@ export default {
       ]
     }),
     typescript({
-      exclude: ['./src/assets/*']
+      tsconfig: './tsconfig.json',
+      exclude: ['./src/assets/*', './bin/*'],
+      compilerOptions: {
+        strict: false,
+        target: 'es2022', //'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'esnext'
+        module: 'es2022',
+        moduleResolution: 'node10' //'node10', 'classic', 'node16', 'nodenext', 'bundler'
+      }
     }),
     //nodeGlobals(),
 
     CommonJS({
-      //ignoreDynamicRequires: true,
+      // ignoreDynamicRequires: true,
       // dynamicRequireTargets: [
-      //   '/home/ipkg01/bin/gcw-cli/gamechanger/node_modules/lzma/*.js',
-      //   '/home/ipkg01/bin/gcw-cli/gamechanger/node_modules/json-url/*.js'
       // ]
       //include: /node_modules/
     }),
     nodeResolve({
-      // preferBuiltins: true,
+      preferBuiltins: true
       // // // //module: false, // <-- this library is not an ES6 module
       // browser: true // <-- suppress node-specific features
     }),
     //CommonJS({ extensions: ['.js', '.ts'] }), // the ".ts" extension is required
-    nodePolyfills(),
+    nodePolyfills()
 
-    terser({
-      module: true,
-      format: { comments: false }
-    })
+    // terser({
+    //   module: true,
+    //   format: { comments: false }
+    // })
   ]
 }

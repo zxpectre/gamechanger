@@ -69,7 +69,7 @@ const decoder = async (
     encoding?: APIEncoding
   }
 ) => {
-  const template = await import('string-placeholder').then((d) => d.exports)
+  //const template = await import('string-placeholder').then((d) => d.exports)
   const useUrlPattern = options?.urlPattern || ''
   const useMsgPlaceholder = options?.msgPlaceholder || 'result'
   if (!msg) throw new Error('Missing message')

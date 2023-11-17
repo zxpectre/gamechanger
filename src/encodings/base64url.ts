@@ -1,7 +1,8 @@
 import { EncodingHandler } from '../types'
 
 import safeJSONStringify from 'json-stringify-safe'
-import URLSafeBase64 from 'urlsafe-base64'
+//import URLSafeBase64 from 'urlsafe-base64'
+import * as URLSafeBase64 from '../modules/urlsafe-base64'
 
 const handler: EncodingHandler = {
   name: 'URL Safe Base64',
