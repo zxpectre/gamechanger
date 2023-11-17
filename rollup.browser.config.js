@@ -12,7 +12,7 @@ import json from '@rollup/plugin-json'
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'dist/index.umd.js',
+    file: 'dist/browser.umd.js',
     format: 'umd',
     name: 'window',
     extend: true,

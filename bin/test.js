@@ -1,3 +1,3 @@
-import { testDeps } from '../dist/index.cjs'
+import { testDeps } from '../dist/nodejs.cjs'
 console.dir({ testDeps })
 testDeps()

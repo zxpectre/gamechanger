@@ -30,9 +30,10 @@
   "scripts": {
     "format": "prettier --write --ignore-path .gitignore .",
     "lint": "npm run format && eslint --ignore-path .gitignore .",
-    "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js",
-    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && cp dist/index.umd.js dist/index.umd.cjs && npm run size",
-    "size": "gzip-size dist/index.umd.js --include-original",
+    "clean": "rm -rf dist/",
+    "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && cp dist/nodejs.cjs dist/nodejs.js",
+    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run size",
+    "size": "gzip-size dist/browser.umd.js --include-original && mv dist/browser.umd.js dist/browser.min.js",
     "test": "npm run build-browser && http-server . -c-1 -o test/"
   },
   "dependencies": {
@@ -73,8 +74,8 @@
   },
   "type": "module",
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.umd.cjs"
+    "import": "./dist/nodejs.js",
+    "require": "./dist/nodejs.cjs"
   },
   "bin": {
     "gamechanger-cli": "./bin/cli.js"
@@ -84,7 +85,7 @@
     "dist/",
     "src/index.ts"
   ],
-  "jsdelivr": "./dist/index.umd.js",
+  "jsdelivr": "./dist/browser.min.js",
   "engines": {
     "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   }
