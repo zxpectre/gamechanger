@@ -1,20 +1,20 @@
-import { APIEncoding, APIVersion, NetworkType } from "../types";
-export const cliName 										= 'gamechanger-dapp-cli';
-export const networks:NetworkType[] 		= ['mainnet', 'preprod'];
-export const apiVersions:APIVersion[] 	= ['1', '2'];
-export const apiEncodings :{[apiVer:string]:APIEncoding[]}={
-	'1':['json-url-lzw'],
-	'2':['json-url-lzma','gzip','base64url']
-};
-export const GCDappConnUrls={
-	'1':{
-		'mainnet':'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
-		'preprod':'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}',
-	},
-	'2':{
-		'mainnet':'https://beta-wallet.gamechanger.finance/api/2/{gcscript}',
-		'preprod':'https://beta-preprod-wallet.gamechanger.finance/api/2/{gcscript}',
-	},	
+import { APIEncoding, APIVersion, NetworkType } from '../types'
+export const cliName = 'gamechanger-dapp-cli'
+export const networks: NetworkType[] = ['mainnet', 'preprod']
+export const apiVersions: APIVersion[] = ['1', '2']
+export const apiEncodings: { [apiVer: string]: APIEncoding[] } = {
+  '1': ['json-url-lzw'],
+  '2': ['json-url-lzma', 'gzip', 'base64url']
+}
+export const GCDappConnUrls = {
+  '1': {
+    mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
+    preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
+  },
+  '2': {
+    mainnet: 'https://beta-wallet.gamechanger.finance/api/2/{gcscript}',
+    preprod: 'https://beta-preprod-wallet.gamechanger.finance/api/2/{gcscript}'
+  }
 }
 
 export const demoGCS = {
@@ -23,15 +23,15 @@ export const demoGCS = {
   description: 'created with ' + cliName,
   metadata: {
     '123': {
-      message: 'Hello World!',
-    },
-  },
-};
+      message: 'Hello World!'
+    }
+  }
+}
 export const demoPacked =
-  'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE';
+  'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
 export const escapeShellArg = (arg: string) =>
   // eslint-disable-next-line quotes
-  `'${arg.replace(/'/g, "'\\''")}'`;
+  `'${arg.replace(/'/g, "'\\''")}'`
 
 export const usageMessage = `
 GameChanger Wallet CLI:
@@ -75,6 +75,8 @@ Examples
 	$ ${cliName} preprod encode qr -a ${escapeShellArg(JSON.stringify(demoGCS))}
 	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} > qr_output.png
 
-	$ ${cliName} preprod encode qr -o qr_output.png -a ${escapeShellArg(JSON.stringify(demoGCS))}
+	$ ${cliName} preprod encode qr -o qr_output.png -a ${escapeShellArg(
+  JSON.stringify(demoGCS)
+)}
 	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} 
-`;
+`

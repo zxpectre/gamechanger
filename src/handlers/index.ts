@@ -1,9 +1,7 @@
 import encode from './encode'
 export default {
-	encode,	
-};
-
-
+  encode
+}
 
 // import { ActionHandlerType} from '../types';
 

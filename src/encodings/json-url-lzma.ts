@@ -1,12 +1,11 @@
-import { EncodingHandler } from "../types";
-import Codec from 'json-url';
+import { EncodingHandler } from '../types'
+import jsonUrl from 'json-url/dist/browser/json-url-single'
+const lzmaCodec = jsonUrl('lzma')
 
-const lzmaCodec = Codec('lzma');
-
-const handler:EncodingHandler = { 
-  name    :"JSON-URL LZMA",
-  encoder:(obj:any/*,_options?:any*/)      =>lzmaCodec.compress    (obj),
-  decoder:(msg:string/*,_options?:any*/)   =>lzmaCodec.decompress  (msg),
+const handler: EncodingHandler = {
+  name: 'JSON-URL LZMA',
+  encoder: (obj: any /*,_options?:any*/) => lzmaCodec.compress(obj),
+  decoder: (msg: string /*,_options?:any*/) => lzmaCodec.decompress(msg)
 }
 
-export default handler;
+export default handler

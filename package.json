@@ -1,92 +1,91 @@
 {
-	"name": "gamechanger-dapp-cli",
-	"version": "1.0.1",
-	"description": "Command line interface for creating ready to use dApps for Cardano with GameChanger Wallet (https://gamechanger.finance/)",
-	"license": "MIT",
-	"repository": "github:zxpectre/gamechanger",
-	"author": {
-		"name": "Javier Ribó, Adriano Fiorenza",
-		"email": "info@gamechanger.finance",
-		"url": "https://gamechanger.finance/"
-	},
-	"exports": {
-		"import": "./dist/index.js",
-		"require": "./dist/index.js"
-	},
-	"jsdelivr": "./dist/index.js",
-	"bin": {
-		"gamechanger-cli": "dist/cli.js"
-	},
-	"engines": {
-		"npm": ">=6.14.5",
-		"node": ">=12.18.2"
-	},
-	"files": [
-		"dist/**/*"
-	],
-	"keywords": [
-		"Cardano",
-		"testnet",
-		"mainnet",
-		"GameChanger",
-		"GameChanger Wallet",
-		"GameChanger Finance",
-		"GCScript",
-		"GCScripts",
-		"dApp",
-		"dApp connector",
-		"blockchain",
-		"utxo",
-		"eutxo",
-		"qr",
-		"json",
-		"no code"
-	],
-	"type": "commonjs",
-	"scripts": {
-		"prepublish": "npm run build",
-		"clean": "rm -Rf dist",
-		"build:all": "npm run clean && npm run type-check",
-		"build": "npm run build:all && tsc && cp -R src/assets dist &&  rm -rf dist/tests",
-		"start": "node dist/cli.js",
-		"type-check": "tsc --noEmit && eslint .",
-		"test": "ts-mocha --require=ts-node/register --loader=ts-node/esm --no-warnings --experimental-module --experimental-specifier-resolution=node -p tsconfig.json src/tests/main.ts src/tests/**/*.test.ts"
-	},
-	"typings": "index.d.ts",
-	"devDependencies": {
-		"@types/chai": "^4.3.1",
-		"@types/expect": "^24.3.0",
-		"@types/jsdom": "^16.2.14",
-		"@types/mocha": "^9.1.0",
-		"@types/node": "^16.11.27",
-		"@typescript-eslint/eslint-plugin": "^5.3.1",
-		"@typescript-eslint/parser": "^5.3.1",
-		"eslint": "^8.2.0",
-		"eslint-config-prettier": "^8.3.0",
-		"execa": "^5.0.0",
-		"mocha": "^9.2.2",
-		"prettier": "^2.4.1",
-		"sinon": "^13.0.2",
-		"ts-mocha": "^9.0.2",
-		"ts-node": "^10.1.0",
-		"typescript": "^4.4.4"
-	},
-	"dependencies": {
-		"@babel/core": "7.23.3",
-		"@babel/runtime": "7.23.2",
-		"chai": "^4.3.6",
-		"data-uri-to-buffer": "^3.0.1",
-		"easyqrcodejs-nodejs": "4.4.3",
-		"fs": "0.0.1-security",
-		"get-stdin": "^8.0.0",
-		"json-stringify-safe": "^5.0.1",
-		"json-url": "^3.0.0",
-		"meow": "^9.0.0",
-		"node-self": "^1.0.0-d",
-		"pako": "^2.1.0",
-		"path": "^0.12.7",
-		"stream": "0.0.2",
-		"string-placeholder": "^1.0.2",
-		"urlsafe-base64": "^1.0.0"
-	}
+  "name": "gamechanger",
+  "version": "1.0.1",
+  "description": "Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and other tasks (https://gamechanger.finance/)",
+  "license": "MIT",
+  "repository": "github:zxpectre/gamechanger",
+  "author": {
+    "name": "Javier Ribó, Adriano Fiorenza",
+    "email": "info@gamechanger.finance",
+    "url": "https://gamechanger.finance/"
+  },
+  "keywords": [
+    "Cardano",
+    "testnet",
+    "mainnet",
+    "GameChanger",
+    "GameChanger Wallet",
+    "GameChanger Finance",
+    "GCScript",
+    "GCScripts",
+    "dApp",
+    "dApp connector",
+    "blockchain",
+    "utxo",
+    "eutxo",
+    "qr",
+    "json",
+    "no code"
+  ],
+  "scripts": {
+    "format": "prettier --write --ignore-path .gitignore .",
+    "lint": "npm run format && eslint --ignore-path .gitignore .",
+    "build": "npm run lint && rollup -c && cp dist/index.umd.js dist/index.umd.cjs && npm run size",
+    "size": "gzip-size dist/index.umd.js --include-original",
+    "test": "npm run build && http-server . -c-1 -o test/"
+  },
+  "dependencies": {
+    "data-uri-to-buffer": "^3.0.1",
+    "easyqrcodejs-nodejs": "4.4.3",
+    "get-stdin": "^8.0.0",
+    "gzip-size-cli": "^5.1.0",
+    "json-stringify-safe": "^5.0.1",
+    "json-url": "^3.0.0",
+    "meow": "^9.0.0",
+    "node-self": "^1.0.0-d",
+    "pako": "^2.1.0",
+    "string-placeholder": "^1.0.2",
+    "urlsafe-base64": "^1.0.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-image": "^3.0.3",
+    "@rollup/plugin-json": "^6.0.1",
+    "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "0.4.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@rollup/plugin-url": "^8.0.2",
+    "@types/mocha": "^10.0.4",
+    "@types/node": "^20.9.1",
+    "ansi-regex": "6.0.1",
+    "chai": "4.3.7",
+    "eslint": "8.44.0",
+    "eslint-config-prettier": "8.8.0",
+    "http-server": "14.1.1",
+    "mocha": "10.2.0",
+    "prettier": "2.8.8",
+    "rollup": "3.26.0",
+    "rollup-plugin-node-globals": "^1.4.0",
+    "rollup-plugin-polyfill-node": "^0.12.0",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2"
+  },
+  "type": "module",
+  "exports": {
+    "import": "./dist/index.js",
+    "require": "./dist/index.umd.cjs"
+  },
+  "bin": {
+    "gamechanger-cli": "./bin/cli.js"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "src/index.ts"
+  ],
+  "jsdelivr": "./dist/index.umd.js",
+  "engines": {
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
+  }
 }
