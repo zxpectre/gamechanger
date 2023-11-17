@@ -44,7 +44,8 @@ export const getBackground = async (width: number = size) => {
 
 export default async function createQRCode(text: string, template = 'default') {
 
-	const QRCode = await import('easyqrcodejs-nodejs').then(d=>d.default);
+	const QRCode = require('easyqrcodejs-nodejs')
+	//await import('easyqrcodejs-nodejs').then(d=>d.default);
 
 	class QRCodeWrapper extends QRCode {
 		private _htOption!: ObjectType;
@@ -70,3 +71,21 @@ export default async function createQRCode(text: string, template = 'default') {
 	});
 	return qrCode;
 }
+
+
+/*
+
+Dependencies that are not compatible with browser:
+
+└─┬ easyqrcodejs-nodejs@4.4.3
+  ├─┬ canvas@2.11.2
+  │ └─┬ @mapbox/node-pre-gyp@1.0.11
+  │   └── https-proxy-agent@5.0.1 deduped
+  └─┬ jsdom@18.1.1
+    ├── https-proxy-agent@5.0.1
+    └─┬ whatwg-encoding@2.0.0
+      └─┬ iconv-lite@0.6.3
+        └── safer-buffer@2.1.2
+
+
+*/
