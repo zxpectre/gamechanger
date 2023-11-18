@@ -8,10 +8,12 @@ import {
 } from '../../types'
 import { validateBuildMsgArgs } from '../../utils'
 
-import urlEncoder from '../../encodings/url'
-import path from 'path'
-import createQRCode from '../../qr'
-import styles from '../../config/styles'
+import qrEncoder from '../../encodings/qr'
+import qrLibLoader from '../../modules/easyqrcodejs'
+
+//import path from 'path'
+import stylesLoader from '../../config/styles'
+//import { createReadStream, createWriteStream, } from 'fs'
 
 export default async (args: {
   apiVersion: APIVersion
@@ -20,6 +22,7 @@ export default async (args: {
   input: string
   debug?: boolean
 
+  qrResultType?: 'png' | 'svg'
   outputFile?: string
   template?: QRTemplateType | string
   styles?: string //JSON
@@ -31,37 +34,52 @@ export default async (args: {
     const urlPattern = GCDappConnUrls[apiVersion][network]
     if (!urlPattern)
       throw new Error(`Missing URL pattern for network '${network || ''}'`)
-    const url = await urlEncoder.encoder(obj, {
-      urlPattern,
-      encoding
-    })
+
+    const { styles, fonts } = stylesLoader()
+    const { registerFonts } = qrLibLoader()
+    registerFonts(fonts)
 
     const template =
       args?.template && styles[args?.template]
         ? args?.template
         : DefaultQRTemplate
 
-    const qrCode = await createQRCode(url, template)
+    let style = styles[template]
 
     if (args?.styles) {
-      let extendedStyle = {}
       try {
-        extendedStyle = JSON.parse(args?.styles)
-      } finally {
-        qrCode.changeStyles(extendedStyle)
+        style = {
+          ...style,
+          ...(JSON.parse(args?.styles) || {})
+        }
+      } catch (err) {
+        throw new Error(`Error applying style layer over '${template}'. ${err}`)
       }
     }
 
-    if (args?.outputFile) {
-      await qrCode.saveImage({
-        path: path.resolve(process.cwd(), `./${args?.outputFile}`)
-      })
-    } else {
-      const stream = await qrCode.toStream()
-      stream.pipe(process.stdout)
-    }
+    const dataURI = await qrEncoder.encoder(obj, {
+      urlPattern,
+      encoding,
+      qrCodeStyle: style,
+      qrResultType: args?.qrResultType
+    })
 
-    return url
+    // const dataURItoBuffer = require('data-uri-to-buffer')
+    // const fs = require('fs')
+
+    // if (args?.outputFile) {
+    //   const filePath = path.resolve(process.cwd(), `./${args?.outputFile}`)
+    //   console.log(
+    //     `Writing file ${filePath}...${String(
+    //       dataURItoBuffer(dataURI)?.typeFull || ''
+    //     ).slice(0, 20)}`
+    //   )
+    //   fs.writeFileSync(filePath, dataURItoBuffer(dataURI), 'utf8')
+    // } else {
+    //   process.stdout.write(dataURItoBuffer(dataURI))
+    // }
+
+    return dataURI
   } catch (err) {
     if (err instanceof Error)
       throw new Error('QR URL generation failed. ' + err?.message)

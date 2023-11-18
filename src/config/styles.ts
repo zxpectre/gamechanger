@@ -3,10 +3,11 @@ import { DefaultQRSubTitle, DefaultQRTitle } from '../types'
 
 import logoURL from '../assets/images/dapp-logo-bg.png'
 import backgroundURL from '../assets/images/background.png'
+import abstractFont from '../assets/fonts/ABSTRACT.ttf'
 
 export const size = 1024
 
-export default async () => {
+export default () => {
   // const logoURL = await resolveGlobal('../assets/images/dapp-logo-bg.png')
   // const backgroundURL = await resolveGlobal('../assets/images/background.png')
 
@@ -70,5 +71,7 @@ export default async () => {
       subTitleFont: 'normal normal bold 9px Abstract'
     }
   }
-  return styles
+
+  const fonts = [{ file: abstractFont, def: { family: 'Abstract' } }]
+  return { styles, fonts }
 }

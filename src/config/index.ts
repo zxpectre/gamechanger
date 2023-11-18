@@ -16,7 +16,7 @@ export const GCDappConnUrls = {
     preprod: 'https://beta-preprod-wallet.gamechanger.finance/api/2/{gcscript}'
   }
 }
-
+export const QRRenderTypes = ['png', 'svg']
 export const demoGCS = {
   type: 'tx',
   title: 'Demo',

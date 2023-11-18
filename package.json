@@ -37,7 +37,10 @@
     "test": "npm run build-browser && http-server . -c-1 -o test/"
   },
   "dependencies": {
+    "canvas": "^2.11.2",
     "data-uri-to-buffer": "^3.0.1",
+    "data-uri-to-file": "^0.1.8",
+    "easyqrcodejs": "^4.6.0",
     "easyqrcodejs-nodejs": "4.4.3",
     "get-stdin": "^8.0.0",
     "gzip-size-cli": "^5.1.0",

@@ -22,6 +22,14 @@ export default {
     //   buffer: 'Buffer'
     // }
   },
+  external: [
+    'canvas-prebuilt',
+    'canvas',
+    'jsdom/lib/jsdom/utils',
+    'jsdom/lib/jsdom/living/generated/utils',
+    'jsdom',
+    'xmldom'
+  ],
   plugins: [
     // image({
     //   include: ['./assets/images/*.png', './assets/images/*.jpg']
