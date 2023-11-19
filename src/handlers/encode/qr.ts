@@ -36,7 +36,7 @@ export default async (args: {
       throw new Error(`Missing URL pattern for network '${network || ''}'`)
 
     const { styles, fonts } = stylesLoader()
-    const { registerFonts } = qrLibLoader()
+    const { registerFonts } = await qrLibLoader()
     registerFonts(fonts)
 
     const template =

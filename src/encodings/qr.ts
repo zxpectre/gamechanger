@@ -1,7 +1,8 @@
 import { Buffer } from 'buffer'
 import { EncodingHandler } from '../types'
 import urlEncoder from './url'
-import { renderQRCode } from '../modules/QR'
+//import { renderQRCode } from '../modules/QR'
+import qrLoader from '../modules/easyqrcodejs'
 
 const handler: EncodingHandler = {
   name: 'GameChanger Wallet QR transport. The URL transport encoded as QR code',
@@ -9,21 +10,24 @@ const handler: EncodingHandler = {
     obj: any,
     options?: { qrCodeStyle?: any; qrResultType?: 'png' | 'svg' }
   ) => {
+    const { renderQRCode } = await qrLoader() //If turns into async, must be moved inside
+
     const url = await urlEncoder.encoder(obj, options)
-    const qr = await renderQRCode({
+    const qrResult = await renderQRCode({
       text: url,
       style: { ...(options?.qrCodeStyle || {}) }
     })
     const qrResultType = options?.qrResultType || 'png'
+    console.dir({ qrResult, qrResultType })
     const handlers = {
-      png: async (qr) => await qr.toDataURL(),
-      svg: async (qr) =>
-        `data:image/svg+xml;base64,${Buffer.from(await qr.toSVGText()).toString(
-          'base64'
-        )}`
+      png: async () => qrResult?.dataURL, //qr.toDataURL(),
+      svg: async () =>
+        `data:image/svg+xml;base64,${Buffer.from(
+          qrResult?.SVGText /*await qr.toSVGText()*/
+        ).toString('base64')}`
     }
-    const res = await handlers[qrResultType](qr)
-    console.log(qrResultType, res)
+    const res = await handlers[qrResultType]()
+    console.log({ qrResult, qrResultType, res })
     return res
   },
   decoder: async (/*msg: string ,_options?:any*/) => {

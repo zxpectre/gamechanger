@@ -56,10 +56,13 @@ export default {
     //CommonJS({ extensions: ['.js', '.ts'] }), // the ".ts" extension is required
     CommonJS({
       //esmExternals: true
-      //transformMixedEsModules: true
-      // // ignoreDynamicRequires: true,
+      //transformMixedEsModules: true,
+      //ignoreDynamicRequires: true,
+      //requireReturnsDefault: true,
       dynamicRequireTargets: [
         './node_modules/json-url/dist/node/browser-index.js'
+        //'./node_modules/easyqrcodejs/src/easy.qrcode.js',
+        //'./node_modules/easyqrcodejs/dist/easy.qrcode.min.js'
       ]
     }),
     terser({
@@ -68,3 +71,9 @@ export default {
     })
   ]
 }
+
+// './node_modules/easyqrcodejs/'
+// "exclude": [
+//   "./node_modules/easyqrcodejs/*",
+//   "./node_modules/easyqrcodejs/dist/easy.qrcode.min.js"
+// ]

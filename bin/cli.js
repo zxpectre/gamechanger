@@ -117,6 +117,7 @@ export default async function main() {
       apiVersion,
       debug,
 
+      qrResultType,
       outputFile,
       template,
       styles

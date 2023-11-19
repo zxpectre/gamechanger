@@ -59,6 +59,26 @@ describe('unit tests', () => {
         'https://beta-wallet.gamechanger.finance/api/2/1-H4sIAAAAAAAAAxWMMQrDMBAEvyJfHRdJOtcp_IPUh7TIBydLSAdJMPp7pGqYgd2L7FdAG9mXbmRiOuWFlIcGNF-lmORzRF_BhuA-YoeLnOAPPiPqGriU1auMRYJxYGPaLro_nhMJrXGcrztUs3vnqmGh3vsfzM0kLnwAAAA'
       )
     })
+
+    it('should build the correct APIv2 QR for a dummy script', async () => {
+      const qr = await gc.encode.qr({
+        apiVersion: '2',
+        network: 'mainnet',
+        encoding: 'gzip',
+        input: `{
+        "type": "tx",
+        "title": "Demo",
+        "description": "created with gamechanger-dapp-cli",
+        "metadata": {
+          "123": {
+            "message": "Hello World!"
+          }
+        }
+      }`
+      })
+      console.log({ qr })
+      expect(qr).not.to.be.empty
+    })
   })
 })
 
