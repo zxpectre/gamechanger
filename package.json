@@ -79,16 +79,13 @@
     "typescript": "^5.2.2"
   },
   "type": "module",
-  "exports": {
-    "import": "./dist/browser.js",
-    "require": "./dist/nodejs.cjs"
-  },
+  "exports": "./dist/browser.js",
   "bin": {
     "gamechanger-cli": "./bin/cli.js"
   },
   "files": [
     "bin/",
-    "dist/"  
+    "dist/"
   ],
   "jsdelivr": "./dist/browser.min.js",
   "engines": {

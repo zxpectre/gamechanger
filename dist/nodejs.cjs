@@ -10877,6 +10877,7 @@ const config = {
   QRRenderTypes
 }
 const testDeps = _testDeps
+//TODO: check https://github.com/knightedcodemonkey/duel
 
 var jsonUrl = () => {
   const isNode = typeof process === 'object' && typeof window !== 'object'
