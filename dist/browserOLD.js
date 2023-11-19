@@ -11100,7 +11100,6 @@ Examples
     usageMessage,
     QRRenderTypes
   }
-  //export default _handlers
   const testDeps = _testDeps
 
   var jsonUrl = () => {
@@ -14708,7 +14707,10 @@ Examples
   })
 
   exports.config = config
+  exports.default = _handlers
   exports.encodings = encodings
   exports.gc = gc
   exports.testDeps = testDeps
+
+  Object.defineProperty(exports, '__esModule', { value: true })
 })

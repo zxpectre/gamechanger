@@ -35,7 +35,7 @@
     "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && cp dist/nodejs.cjs dist/nodejs.js",
     "build-browser-min": "npm run lint && rollup -c rollup.browser-min.config.js && npm run size && npm run bundle-deps",
     "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run bundle-deps",
-    "build": "npm run clean && npm run build-nodejs && npm run build-browser && npm run build-browser-min",
+    "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min",
     "size": "gzip-size dist/browser.min.js --include-original",
     "test": "npm run build-browser-min && http-server . -c-1 -o test/"
   },

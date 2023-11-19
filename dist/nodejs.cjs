@@ -1,7 +1,5 @@
 'use strict'
 
-Object.defineProperty(exports, '__esModule', { value: true })
-
 var Canvas = require('canvas')
 
 var global$1 =
@@ -10876,6 +10874,7 @@ const config = {
   usageMessage,
   QRRenderTypes
 }
+//export default _handlers
 const testDeps = _testDeps
 
 var jsonUrl = () => {
@@ -14435,7 +14434,6 @@ var lzma$1 = /*#__PURE__*/ Object.freeze({
 })
 
 exports.config = config
-exports.default = _handlers
 exports.encodings = encodings
 exports.gc = gc
 exports.testDeps = testDeps
