@@ -88,8 +88,7 @@
   },
   "files": [
     "bin/",
-    "dist/",
-    "src/index.ts"
+    "dist/"  
   ],
   "jsdelivr": "./dist/browser.min.js",
   "engines": {
