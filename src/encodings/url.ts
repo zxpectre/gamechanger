@@ -20,12 +20,12 @@ const encoder = async (
   if (!useMsgPlaceholder)
     throw new Error('Missing message placeholder for URL pattern')
 
-  console.log({ message })
+  //console.log({ message })
   const msg = await message.encoder(obj, {
     encoding: options?.encoding,
     encodingOptions: options?.encodingOptions
   })
-  console.log({ msg })
+  //console.log({ msg })
 
   const parsedUrl = new URL(useUrlPattern)
   if (!parsedUrl || !parsedUrl.origin || !parsedUrl.host)

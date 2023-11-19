@@ -1,7 +1,7 @@
 {
   "name": "gamechanger",
   "version": "1.0.1",
-  "description": "Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and other tasks (https://gamechanger.finance/)",
+  "description": "Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)",
   "license": "MIT",
   "repository": "github:zxpectre/gamechanger",
   "author": {
@@ -34,6 +34,7 @@
     "bundle-deps": "cp node_modules/easyqrcodejs/dist/easy.qrcode.min.js dist/easy.qrcode.min.js && cp node_modules/json-url/dist/browser/json-url-single.js dist/json-url-single.js",
     "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && cp dist/nodejs.cjs dist/nodejs.js",
     "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run size && npm run bundle-deps",
+    "build": "npm run build-nodejs && npm run build-browser",
     "size": "gzip-size dist/browser.umd.js --include-original && mv dist/browser.umd.js dist/browser.min.js",
     "test": "npm run build-browser && http-server . -c-1 -o test/"
   },

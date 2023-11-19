@@ -64,21 +64,6 @@ export default async (args: {
       qrResultType: args?.qrResultType
     })
 
-    // const dataURItoBuffer = require('data-uri-to-buffer')
-    // const fs = require('fs')
-
-    // if (args?.outputFile) {
-    //   const filePath = path.resolve(process.cwd(), `./${args?.outputFile}`)
-    //   console.log(
-    //     `Writing file ${filePath}...${String(
-    //       dataURItoBuffer(dataURI)?.typeFull || ''
-    //     ).slice(0, 20)}`
-    //   )
-    //   fs.writeFileSync(filePath, dataURItoBuffer(dataURI), 'utf8')
-    // } else {
-    //   process.stdout.write(dataURItoBuffer(dataURI))
-    // }
-
     return dataURI
   } catch (err) {
     if (err instanceof Error)

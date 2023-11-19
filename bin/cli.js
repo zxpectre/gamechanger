@@ -129,11 +129,12 @@ export default async function main() {
 
         if (outputFile) {
           const filePath = path.resolve(process.cwd(), `./${outputFile}`)
-          console.log(
-            `Writing file ${filePath}...${String(
-              dataURItoBuffer(dataURI)?.typeFull || ''
-            ).slice(0, 20)}`
-          )
+          if (debug)
+            console.log(
+              `Writing file ${filePath}...${String(
+                dataURItoBuffer(dataURI)?.typeFull || ''
+              ).slice(0, 20)}`
+            )
           fs.writeFileSync(filePath, dataURItoBuffer(dataURI), 'utf8')
         } else {
           process.stdout.write(dataURItoBuffer(dataURI))

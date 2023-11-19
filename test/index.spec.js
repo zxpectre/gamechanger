@@ -54,7 +54,6 @@ describe('unit tests', () => {
         }
       }`
       })
-      console.log({ url })
       expect(url).to.equal(
         'https://beta-wallet.gamechanger.finance/api/2/1-H4sIAAAAAAAAAxWMMQrDMBAEvyJfHRdJOtcp_IPUh7TIBydLSAdJMPp7pGqYgd2L7FdAG9mXbmRiOuWFlIcGNF-lmORzRF_BhuA-YoeLnOAPPiPqGriU1auMRYJxYGPaLro_nhMJrXGcrztUs3vnqmGh3vsfzM0kLnwAAAA'
       )
@@ -76,7 +75,6 @@ describe('unit tests', () => {
         }
       }`
       })
-      console.log({ qr })
       expect(qr).not.to.be.empty
     })
   })

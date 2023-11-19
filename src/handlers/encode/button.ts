@@ -25,8 +25,6 @@ export default async (args: {
       encoding
     })
 
-    if (!args?.debug) console.info(url)
-
     return url
   } catch (err) {
     if (err instanceof Error)

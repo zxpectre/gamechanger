@@ -46,11 +46,11 @@ export default async () => {
       const { registerFont } = Canvas
       items.forEach(({ file, def }) => {
         const fontPath = path.resolve(__dirname, file)
-        console.log(
-          `Registering font '${fontPath}' (${
-            def?.family || 'Unknown'
-          }) on NodeJS Canvas...`
-        )
+        // console.log(
+        //   `Registering font '${fontPath}' (${
+        //     def?.family || 'Unknown'
+        //   }) on NodeJS Canvas...`
+        // )
         try {
           registerFont(fontPath, def)
         } catch (err) {
@@ -103,7 +103,7 @@ export default async () => {
           ...(args.style || {}),
           text: args.text,
           onRenderingEnd: (qrCodeOptions: any, dataURL: string) => {
-            console.dir({ dataURL, qrCodeOptions })
+            //console.dir({ dataURL, qrCodeOptions })
             resolve({ qr, qrCodeOptions, dataURL, SVGText: '' })
           }
         })
@@ -114,18 +114,18 @@ export default async () => {
       const { registerFont } = Canvas
       items.forEach(({ file, def }) => {
         const fontPath = file
-        console.log(
-          `Registering font '${fontPath}' (${
-            def?.family || 'Unknown'
-          }) on NodeJS Canvas...`
-        )
+        // console.log(
+        //   `Registering font '${fontPath}' (${
+        //     def?.family || 'Unknown'
+        //   }) on Browser Canvas...`
+        // )
         try {
           registerFont(fontPath, def)
         } catch (err) {
           // throw new Error(
           //   `Error registering font '${fontPath}' (${
           //     def?.family || 'Unknown'
-          //   }) on NodeJS Canvas. ${err}`
+          //   }) on Browser Canvas. ${err}`
           // )
         }
       })
@@ -156,12 +156,9 @@ export default async () => {
 
 //   constructor(options: ObjectType) {
 //     //const { width, height } = options
-//     console.dir({ options })
 //     // const canvas = Canvas.createCanvas(width, height)
-//     // console.dir({ Canvas, canvas })
 //     // if (!canvas) throw new Error('canvas creation failed on nodejs')
 //     super(options)
-//     console.dir({ self: this })
 //   }
 
 //   changeStyles(styles: ObjectType) {

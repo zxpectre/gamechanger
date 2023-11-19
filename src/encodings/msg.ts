@@ -68,9 +68,7 @@ const handler: EncodingHandler = {
     if (!codec) throw new Error('Unknown encoder. Cannot encode')
     const header = HeadersByEncoders[useEncoding]
     if (!header) throw new Error('Unknown encoder header. Cannot encode')
-    console.log({ codec, obj })
     const msgBody = await codec.encoder(obj, options?.encodingOptions)
-    console.log({ msgBody })
     const msg = `${['XQ', 'wo'].includes(header) ? '' : header}${msgBody}` //legacy modes has no added header
     return msg
   },

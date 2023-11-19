@@ -18,7 +18,6 @@ const handler: EncodingHandler = {
       style: { ...(options?.qrCodeStyle || {}) }
     })
     const qrResultType = options?.qrResultType || 'png'
-    console.dir({ qrResult, qrResultType })
     const handlers = {
       png: async () => qrResult?.dataURL, //qr.toDataURL(),
       svg: async () =>
@@ -27,7 +26,7 @@ const handler: EncodingHandler = {
         ).toString('base64')}`
     }
     const res = await handlers[qrResultType]()
-    console.log({ qrResult, qrResultType, res })
+    //console.log({ qrResult, qrResultType, res })
     return res
   },
   decoder: async (/*msg: string ,_options?:any*/) => {
