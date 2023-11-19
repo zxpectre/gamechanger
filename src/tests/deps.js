@@ -40,7 +40,7 @@ export default async () => {
       return undefined
     })
 
-  const lzwCodec = jsonUrl ? jsonUrl('lzw') : undefined
+  const lzwCodec = jsonUrl('lzw') //jsonUrl ? jsonUrl('lzw') : undefined
   console.log({ lzwCodec })
 
   //const lzmaCodec = jsonUrl('lzma')

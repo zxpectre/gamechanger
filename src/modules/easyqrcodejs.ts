@@ -1,22 +1,27 @@
 import Canvas from 'canvas'
 import path from 'path'
 import { ObjectType } from '../types'
-//import QRCode4Node from 'easyqrcodejs-nodejs'
-//import QRCode4Browser from 'easyqrcodejs'
-//import { ObjectType } from '../types'
 
 export default async () => {
   const isNode = typeof process === 'object' && typeof window !== 'object'
   //const useGlobal = isNode ? global : window;
 
+  /**
+   * Trick:
+   * by using this dynamic argument on `import(pathStr)`
+   * I prevent rollup/typescript to detect and auto-process the imported js files
+   */
+  const pathStr = isNode
+    ? 'easyqrcodejs-nodejs'
+    : '../../dist/easy.qrcode.min.js'
+  //: 'https://cdn.jsdelivr.net/npm/easyqrcodejs@4.6.0/dist/easy.qrcode.min.js' //'json-url/dist/browser/json-url-single.js'
+
   if (isNode) {
-    const _QRCode = await import('easyqrcodejs-nodejs').then((d) => d?.default) //QRCode4Node //require('easyqrcodejs-nodejs')
-    //const Canvas = require('canvas') //https://github.com/Automattic/node-canvas
+    const _QRCode = await import(pathStr).then((d) => d?.default) //QRCode4Node //require('easyqrcodejs-nodejs')
     //const path = require('path')
     const QRCode = _QRCode //replaceable by a wrapper class
     const createQRCode = (options: ObjectType) => {
-      // const canvas = Canvas.createCanvas(width, height)
-      // if (!canvas) throw new Error('canvas creation failed on browser')
+      // const canvas = require('canvas').createCanvas(options.width, options.height) //https://github.com/Automattic/node-canvas
       return new QRCode(options)
     }
     const renderQRCode = async (args: {
@@ -65,16 +70,27 @@ export default async () => {
       renderQRCode,
       registerFonts
     }
+
+    // return {
+    //   _QRCode: {},
+    //   QRCode: {},
+    //   Canvas: {},
+    //   createQRCode: () => {},
+    //   renderQRCode: () => {},
+    //   registerFonts: () => {}
+    // }
   } else {
-    //const _QRCode = QRCode4Browser //await import('easyqrcodejs-nodejs').then(
-    //const _QRCode = await import('easyqrcodejs/dist/easy.qrcode.min.js').then(
-    const _QRCode = await import('easyqrcodejs/src/easy.qrcode').then(() => {
+    //const _QRCode = await import('easyqrcodejs/dist/easy.qrcode.min.js').then(() => {
+    //const _QRCode = await import('easyqrcodejs/src/easy.qrcode').then(() => {
+    //WORKS but nodejs version breaks it on browser?
+    //const _QRCode = await import('easyqrcodejs').then(() => {
+    const _QRCode = await import(pathStr).then(() => {
       return (<any>window)?.QRCode
-    }) //QRCode4Browser //require('easyqrcodejs-nodejs')
+    })
 
     const QRCode = _QRCode //replaceable by a wrapper class
     const createQRCode = (options: ObjectType) => {
-      const canvas = document.createElement('canvas') //Canvas.createCanvas(width, height)
+      const canvas = document.createElement('canvas')
       if (!canvas) throw new Error('canvas creation failed on browser')
       return new QRCode(canvas, options)
     }
@@ -93,6 +109,7 @@ export default async () => {
         })
       })
     }
+    //TODO: fix paths on browser by bundling the files. Maybe as a blob or dataURI?
     const registerFonts = (items: Array<{ file: string; def: any }>) => {
       const { registerFont } = Canvas
       items.forEach(({ file, def }) => {
@@ -121,6 +138,15 @@ export default async () => {
       renderQRCode,
       registerFonts
     }
+
+    // return {
+    //   _QRCode: {},
+    //   QRCode: {},
+    //   Canvas: {},
+    //   createQRCode: () => {},
+    //   renderQRCode: () => {},
+    //   registerFonts: () => {}
+    // }
   }
 }
 

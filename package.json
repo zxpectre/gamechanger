@@ -31,8 +31,9 @@
     "format": "prettier --write --ignore-path .gitignore .",
     "lint": "npm run format && eslint --ignore-path .gitignore .",
     "clean": "rm -rf dist/",
+    "bundle-deps": "cp node_modules/easyqrcodejs/dist/easy.qrcode.min.js dist/easy.qrcode.min.js && cp node_modules/json-url/dist/browser/json-url-single.js dist/json-url-single.js",
     "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && cp dist/nodejs.cjs dist/nodejs.js",
-    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run size",
+    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run size && npm run bundle-deps",
     "size": "gzip-size dist/browser.umd.js --include-original && mv dist/browser.umd.js dist/browser.min.js",
     "test": "npm run build-browser && http-server . -c-1 -o test/"
   },

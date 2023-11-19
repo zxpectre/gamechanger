@@ -8,6 +8,7 @@ import nodePolyfills from 'rollup-plugin-polyfill-node'
 import nodeResolve from '@rollup/plugin-node-resolve'
 //import nodeGlobals from 'rollup-plugin-node-globals'
 import json from '@rollup/plugin-json'
+//import path from 'path'
 
 export default {
   input: 'src/index.ts',
@@ -38,7 +39,11 @@ export default {
     }),
     typescript({
       tsconfig: './tsconfig.json',
-      exclude: ['./src/assets/*', './bin/*'],
+      exclude: [
+        './src/assets/*',
+        './bin/*',
+        './node_modules/easyqrcodejs-nodejs/*'
+      ],
       compilerOptions: {
         strict: false,
         target: 'es2022', //'es3', 'es5', 'es6', 'es2015', 'es2016', 'es2017', 'es2018', 'es2019', 'es2020', 'es2021', 'es2022', 'esnext'
@@ -50,20 +55,25 @@ export default {
 
     nodeResolve({
       // preferBuiltins: true,
-      // module: false, // <-- this library is not an ES6 module
+      //module: true, // <-- this library is not an ES6 module
       browser: true // <-- suppress node-specific features
     }),
     //CommonJS({ extensions: ['.js', '.ts'] }), // the ".ts" extension is required
     CommonJS({
-      //esmExternals: true
-      //transformMixedEsModules: true,
-      //ignoreDynamicRequires: true,
-      //requireReturnsDefault: true,
-      dynamicRequireTargets: [
-        './node_modules/json-url/dist/node/browser-index.js'
-        //'./node_modules/easyqrcodejs/src/easy.qrcode.js',
-        //'./node_modules/easyqrcodejs/dist/easy.qrcode.min.js'
-      ]
+      exclude: ['./node_modules/easyqrcodejs-nodejs/*'],
+      // //esmExternals: true,
+      // //transformMixedEsModules: true,
+      // //ignoreDynamicRequires: true,
+      // //requireReturnsDefault: true,
+      strictRequires: 'debug',
+      transformMixedEsModules: true
+      // // dynamicRequireTargets: [
+      // //   //path.resolve('./node_modules/easyqrcodejs/dist/easy.qrcode.min.js'),
+      // //   //path.resolve('./node_modules/json-url/dist/node/browser-index.js')
+      // //   //'./node_modules/json-url/dist/node/browser-index.js'
+      // //   //'./node_modules/easyqrcodejs/src/easy.qrcode.js',
+      // //   //'./node_modules/easyqrcodejs/dist/easy.qrcode.min.js'
+      // // ]
     }),
     terser({
       module: true,
