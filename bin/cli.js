@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { gc, config } from '../dist/nodejs.cjs'
 import meow from 'meow'
 import getStdin from 'get-stdin'
