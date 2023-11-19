@@ -1,4 +1,4 @@
-//import terser from '@rollup/plugin-terser'
+import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 //import typescript from 'rollup-plugin-typescript2'
 import CommonJS from '@rollup/plugin-commonjs'
@@ -13,7 +13,7 @@ import json from '@rollup/plugin-json'
 export default {
   input: 'src/index.ts',
   output: {
-    file: 'dist/browser.js',
+    file: 'dist/browser.min.js',
     format: 'umd',
     name: 'window',
     extend: true,
@@ -74,6 +74,10 @@ export default {
       // //   //'./node_modules/easyqrcodejs/src/easy.qrcode.js',
       // //   //'./node_modules/easyqrcodejs/dist/easy.qrcode.min.js'
       // // ]
+    }),
+    terser({
+      module: true,
+      format: { comments: false }
     })
   ]
 }

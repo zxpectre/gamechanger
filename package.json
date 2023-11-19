@@ -33,10 +33,11 @@
     "clean": "rm -rf dist/",
     "bundle-deps": "cp node_modules/easyqrcodejs/dist/easy.qrcode.min.js dist/easy.qrcode.min.js && cp node_modules/json-url/dist/browser/json-url-single.js dist/json-url-single.js",
     "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && cp dist/nodejs.cjs dist/nodejs.js",
-    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run size && npm run bundle-deps",
-    "build": "npm run build-nodejs && npm run build-browser",
-    "size": "gzip-size dist/browser.umd.js --include-original && mv dist/browser.umd.js dist/browser.min.js",
-    "test": "npm run build-browser && http-server . -c-1 -o test/"
+    "build-browser-min": "npm run lint && rollup -c rollup.browser-min.config.js && npm run size && npm run bundle-deps",
+    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run bundle-deps",
+    "build": "npm run clean && npm run build-nodejs && npm run build-browser && npm run build-browser-min",
+    "size": "gzip-size dist/browser.min.js --include-original",
+    "test": "npm run build-browser-min && http-server . -c-1 -o test/"
   },
   "dependencies": {
     "canvas": "^2.11.2",
@@ -79,7 +80,7 @@
   },
   "type": "module",
   "exports": {
-    "import": "./dist/nodejs.js",
+    "import": "./dist/browser.js",
     "require": "./dist/nodejs.cjs"
   },
   "bin": {
