@@ -14,6 +14,6 @@ export const config = {
   usageMessage,
   QRRenderTypes
 }
-//export default _handlers
+export default _handlers
 
 export const testDeps = _testDeps
