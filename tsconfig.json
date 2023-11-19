@@ -12,7 +12,7 @@
     "noImplicitAny": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "isolatedModules": false,
+    "isolatedModules": true,
     "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
     "allowUmdGlobalAccess": true,
