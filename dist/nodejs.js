@@ -9927,6 +9927,10 @@ Examples
 	$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
 	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
+	$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+	
+
 `
 
 const DefaultNetwork = 'mainnet'
