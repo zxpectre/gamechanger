@@ -1,3 +1,0 @@
-declare const _default: () => Promise<any>
-export default _default
-//# sourceMappingURL=json-url.d.ts.map
