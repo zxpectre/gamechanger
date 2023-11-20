@@ -32,7 +32,7 @@ Actions:
         'snippet':
                 'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
                 'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-                'nodejs'  : generates a ready to use Node JS dApp with a URL connector from a valid GCScript
+                'express' : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
                 'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
 Options:
         --args [gcscript] | -a [gcscript]:  Load GCScript from arguments
@@ -56,31 +56,45 @@ Options:
 
 Examples
 
-        $ gamechanger-cli mainnet encode url -f demo.gcscript
-        https://wallet.gamechanger.finance/api/1/tx/woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE
+        URL and QR Code encodings:
+        URL APIv1:
+                $ gamechanger-cli preprod encode url -v 1 -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
+                https://preprod-wallet.gamechanger.finance/api/1/tx/...
 
-        $ gamechanger-cli preprod encode url -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
-        https://preprod-wallet.gamechanger.finance/api/1/tx/woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE
+                $ cat demo.gcscript | gamechanger-cli mainnet encode url -v 1
+                https://wallet.gamechanger.finance/api/1/tx/...
 
-        $ cat demo.gcscript | gamechanger-cli mainnet encode url
-        https://wallet.gamechanger.finance/api/1/tx/woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE
+        URL APIv2
+                $ gamechanger-cli mainnet encode url -v 2 -f connect.gcscript
+                https://beta-wallet.gamechanger.finance/api/1/run/...
 
-        $ gamechanger-cli preprod encode qr -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
-        https://preprod-wallet.gamechanger.finance/api/1/tx/woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE > qr_output.png
+        QR APIv1:
+                $ gamechanger-cli preprod encode qr -v 1 -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}' > qr_output.png
 
-        $ gamechanger-cli preprod encode qr -o qr_output.png -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
-        https://preprod-wallet.gamechanger.finance/api/1/tx/woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE
+                $ gamechanger-cli mainnet encode qr -v 1 -o qr_output.png -a '{"type":"tx","title":"Demo","description":"created with gamechanger-cli","metadata":{"123":{"message":"Hello World!"}}}'
 
-        $ gamechanger-cli mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+        QR APIv2:
+                $ gamechanger-cli mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
 
-        $ gamechanger-cli preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
-        🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
 
-        $ gamechanger-cli mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
-        🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+        Code snippet generation and serve dapp (-S):
 
-        $ gamechanger-cli mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+        HTML:
+                $ gamechanger-cli preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+        ReactJS:
+                $ gamechanger-cli mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+        HTML Button snippet:
+                $ gamechanger-cli mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+                🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+        Express Backend:
+                $ gamechanger-cli mainnet snippet express -v 2 -o expressBackend.js -f connect.gcscript
+                $ node expressBackend.js
+                🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
 
 ```
 

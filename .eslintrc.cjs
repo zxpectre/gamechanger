@@ -11,7 +11,7 @@ module.exports = {
     node: true
   },
   rules: {
-    'no-tabs': 'error',
+    'no-tabs': 0,
     'no-unexpected-multiline': 'error'
   }
 }

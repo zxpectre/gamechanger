@@ -71,7 +71,7 @@ Actions:
 	'snippet':
 		'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
 		'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-		'nodejs'  : generates a ready to use Node JS dApp with a URL connector from a valid GCScript
+		'express' : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
 		'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
 Options:
 	--args [gcscript] | -a [gcscript]:  Load GCScript from arguments
@@ -95,33 +95,51 @@ Options:
 
 Examples
 
-	$ ${cliName} mainnet encode url -f demo.gcscript
-	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ ${cliName} preprod encode url -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ cat demo.gcscript | ${cliName} mainnet encode url
-	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ ${cliName} preprod encode qr -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} > qr_output.png
-
-	$ ${cliName} preprod encode qr -o qr_output.png -a ${escapeShellArg(
+	URL and QR Code encodings:
+	URL APIv1:
+		$ ${cliName} preprod encode url -v 1 -a ${escapeShellArg(
   JSON.stringify(demoGCS)
 )}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} 
+		https://preprod-wallet.gamechanger.finance/api/1/tx/...
 
-	$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+		$ cat demo.gcscript | ${cliName} mainnet encode url -v 1
+		https://wallet.gamechanger.finance/api/1/tx/...
 
-	$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+	URL APIv2
+		$ ${cliName} mainnet encode url -v 2 -f connect.gcscript
+		https://beta-wallet.gamechanger.finance/api/1/run/...
 
-	$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+	QR APIv1:
+		$ ${cliName} preprod encode qr -v 1 -a ${escapeShellArg(
+  JSON.stringify(demoGCS)
+)} > qr_output.png
 
-	$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+		$ ${cliName} mainnet encode qr -v 1 -o qr_output.png -a ${escapeShellArg(
+  JSON.stringify(demoGCS)
+)}
 	
+	QR APIv2:
+		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+
+
+	Code snippet generation and serve dapp (-S):
+
+	HTML:
+		$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+	ReactJS:
+		$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+	HTML Button snippet:
+		$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+		
+	Express Backend:
+		$ ${cliName} mainnet snippet express -v 2 -o expressBackend.js -f connect.gcscript
+		$ node expressBackend.js
+		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
+
 
 `

@@ -9857,8 +9857,6 @@ const demoGCS = {
     }
   }
 }
-const demoPacked =
-  'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
 const escapeShellArg = (arg) =>
   // eslint-disable-next-line quotes
   `'${arg.replace(/'/g, "'\\''")}'`
@@ -9878,7 +9876,7 @@ Actions:
 	'snippet':
 		'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
 		'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-		'nodejs'  : generates a ready to use Node JS dApp with a URL connector from a valid GCScript
+		'express' : generates a ready to use Node JS Express backend that redirects browser users to connect with the wallet, from a valid GCScript
 		'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
 Options:
 	--args [gcscript] | -a [gcscript]:  Load GCScript from arguments
@@ -9902,34 +9900,52 @@ Options:
 
 Examples
 
-	$ ${cliName} mainnet encode url -f demo.gcscript
-	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ ${cliName} preprod encode url -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ cat demo.gcscript | ${cliName} mainnet encode url
-	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ ${cliName} preprod encode qr -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} > qr_output.png
-
-	$ ${cliName} preprod encode qr -o qr_output.png -a ${escapeShellArg(
+	URL and QR Code encodings:
+	URL APIv1:
+		$ ${cliName} preprod encode url -v 1 -a ${escapeShellArg(
   JSON.stringify(demoGCS)
 )}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} 
+		https://preprod-wallet.gamechanger.finance/api/1/tx/...
 
-	$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+		$ cat demo.gcscript | ${cliName} mainnet encode url -v 1
+		https://wallet.gamechanger.finance/api/1/tx/...
 
-	$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+	URL APIv2
+		$ ${cliName} mainnet encode url -v 2 -f connect.gcscript
+		https://beta-wallet.gamechanger.finance/api/1/run/...
 
-	$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+	QR APIv1:
+		$ ${cliName} preprod encode qr -v 1 -a ${escapeShellArg(
+  JSON.stringify(demoGCS)
+)} > qr_output.png
 
-	$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
-	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+		$ ${cliName} mainnet encode qr -v 1 -o qr_output.png -a ${escapeShellArg(
+  JSON.stringify(demoGCS)
+)}
 	
+	QR APIv2:
+		$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+
+
+	Code snippet generation and serve dapp (-S):
+
+	HTML:
+		$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+	ReactJS:
+		$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+	HTML Button snippet:
+		$ ${cliName} mainnet snippet button -v 2 -S -o connectButton.html -f connect.gcscript
+		🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+		
+	Express Backend:
+		$ ${cliName} mainnet snippet express -v 2 -o expressBackend.js -f connect.gcscript
+		$ node expressBackend.js
+		🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://localhost:3000/
+
 
 `
 
@@ -10894,96 +10910,12 @@ var QREncoder = async (args) => {
   }
 }
 
-var ButtonEncoder$1 = async (args) => {
-  try {
-    throw new Error('Not implemented yet')
-    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-    const obj = JSON.parse(input)
-    const urlPattern = GCDappConnUrls[apiVersion][network]
-    if (!urlPattern)
-      throw new Error(`Missing URL pattern for network '${network || ''}'`)
-    const url = await handler$1.encoder(obj, {
-      urlPattern,
-      encoding
-    })
-    return url
-  } catch (err) {
-    if (err instanceof Error)
-      throw new Error('URL generation failed. ' + err?.message)
-    else throw new Error('URL generation failed. ' + 'Unknown error')
-  }
-}
-
-var HtmlEncoder$1 = async (args) => {
-  try {
-    throw new Error('Not implemented yet')
-    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-    const obj = JSON.parse(input)
-    const urlPattern = GCDappConnUrls[apiVersion][network]
-    if (!urlPattern)
-      throw new Error(`Missing URL pattern for network '${network || ''}'`)
-    const url = await handler$1.encoder(obj, {
-      urlPattern,
-      encoding
-    })
-    return url
-  } catch (err) {
-    if (err instanceof Error)
-      throw new Error('URL generation failed. ' + err?.message)
-    else throw new Error('URL generation failed. ' + 'Unknown error')
-  }
-}
-
-var ReactEncoder$1 = async (args) => {
-  try {
-    throw new Error('Not implemented yet')
-    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-    const obj = JSON.parse(input)
-    const urlPattern = GCDappConnUrls[apiVersion][network]
-    if (!urlPattern)
-      throw new Error(`Missing URL pattern for network '${network || ''}'`)
-    const url = await handler$1.encoder(obj, {
-      urlPattern,
-      encoding
-    })
-    return url
-  } catch (err) {
-    if (err instanceof Error)
-      throw new Error('URL generation failed. ' + err?.message)
-    else throw new Error('URL generation failed. ' + 'Unknown error')
-  }
-}
-
-var ExpressEncoder = async (args) => {
-  try {
-    throw new Error('Not implemented yet')
-    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-    const obj = JSON.parse(input)
-    const urlPattern = GCDappConnUrls[apiVersion][network]
-    if (!urlPattern)
-      throw new Error(`Missing URL pattern for network '${network || ''}'`)
-    const url = await handler$1.encoder(obj, {
-      urlPattern,
-      encoding
-    })
-    return url
-  } catch (err) {
-    if (err instanceof Error)
-      throw new Error('URL generation failed. ' + err?.message)
-    else throw new Error('URL generation failed. ' + 'Unknown error')
-  }
-}
-
 var encode = {
   url: URLEncoder,
-  qr: QREncoder,
-  button: ButtonEncoder$1,
-  html: HtmlEncoder$1,
-  express: ExpressEncoder,
-  react: ReactEncoder$1
+  qr: QREncoder
 }
 
-const baseTemplate$1 = async (args) => {
+const baseTemplate$2 = async (args) => {
   const urlPattern = GCDappConnUrls[args?.apiVersion][args?.network]
   if (!urlPattern)
     throw new Error(`Missing URL pattern for network '${args?.network || ''}'`)
@@ -11006,7 +10938,7 @@ background-color:#476e9e;}.gcConnectButton:active {position:relative;top:1px;}</
 var ButtonEncoder = async (args) => {
   try {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-    const text = await baseTemplate$1({
+    const text = await baseTemplate$2({
       apiVersion,
       network,
       encoding,
@@ -11414,6 +11346,100 @@ var HtmlEncoder = async (args) => {
 // Use:
 //   import {gc} from 'gamechanger'
 
+const baseTemplate$1 = async (args) => {
+  const strProp = (str) =>
+    str === undefined ? 'undefined' : JSON.stringify(str)
+  return `
+  //#!/usr/bin/env node
+
+  //Install on project:
+  //  $ npm install -s gamechanger
+  // or
+  //Install globally:
+  //  $ npm install -g gamechanger
+  //Run this file
+  //  $ node <FILENAME>.js
+
+  //Import if testing the library:
+  //import { gc } from './dist/nodejs.js'
+  // or
+  //Import normally:
+  import { gc } from 'gamechanger'
+
+  import express from 'express';
+  
+  const gcscript=${args.input};
+  
+  export const serve = ({
+      indexHtml,
+      url,
+      host = 'localhost',
+      port = 3000,
+      libPath = 'dist'
+    }) => {
+      const app = express()
+      const routeDescriptions={
+          '/dist':"Gamechanger library files",
+          
+          '/':"hosted output file",
+      }
+      app.use('/dist', express.static(libPath))
+      if(url){
+          app.get('/url', (req, res) => {
+              res.status(301).redirect(url);
+          });
+          routeDescriptions['/url']="redirects user to dapp connection URL";
+      }
+      if(indexHtml){
+          app.get('/', (req, res) => {
+          res.send(indexHtml)
+          });
+          routeDescriptions['/']="Minimal home";
+      }
+      app.listen(port, () =>{
+        console.info(
+          \`\\n\\n🚀 Express NodeJs Backend serving output URL with the hosted Gamechanger library on http://\${host}:\${port}/\\n\`
+        );
+        console.info("Routes:")
+        Object.entries(routeDescriptions).map(([route,description])=>{
+          console.info(\`\t\${route}: \t\${description}\`)
+        });
+        console.info("\\n\\n")
+      })
+    }
+  
+  export const main= async()=>{
+      const url=await gc.encode.url({
+        input:JSON.stringify(gcscript),
+        apiVersion:${strProp(args?.apiVersion)},
+        network:${strProp(args?.network)},
+        encoding:${strProp(args?.encoding)},
+        });
+      serve({url,indexHtml:\`<html><a href="/url">Click to get redirected to connect with GameChanger Wallet</a></html>\`})
+  }
+  
+  main();
+`
+}
+var ExpressEncoder = async (args) => {
+  try {
+    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
+    const text = await baseTemplate$1({
+      apiVersion,
+      network,
+      encoding,
+      input
+    })
+    return `data:application/javascript;base64,${Buffer.from(text).toString(
+      'base64'
+    )}`
+  } catch (err) {
+    if (err instanceof Error)
+      throw new Error('URL generation failed. ' + err?.message)
+    else throw new Error('URL generation failed. ' + 'Unknown error')
+  }
+}
+
 // import urlEncoder from '../../encodings/url'
 const baseTemplate = (args) => {
   const isNode = typeof process === 'object' && typeof window !== 'object'
@@ -11560,7 +11586,7 @@ var ReactEncoder = async (args) => {
 var snippet = {
   button: ButtonEncoder,
   html: HtmlEncoder,
-  // express: ExpressEncoder,
+  express: ExpressEncoder,
   react: ReactEncoder
 }
 
