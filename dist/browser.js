@@ -37,8 +37,9 @@ const GCDappConnUrls = {
     preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
   },
   2: {
-    mainnet: 'https://beta-wallet.gamechanger.finance/api/2/{gcscript}',
-    preprod: 'https://beta-preprod-wallet.gamechanger.finance/api/2/{gcscript}'
+    mainnet: 'https://beta-wallet.gamechanger.finance/api/2/run/{gcscript}',
+    preprod:
+      'https://beta-preprod-wallet.gamechanger.finance/api/2/run/{gcscript}'
   }
 }
 const QRRenderTypes = ['png', 'svg']
@@ -151,6 +152,11 @@ const validateBuildMsgArgs = (args) => {
     throw new Error(
       'Wrong input type. GCScript must be presented as JSON string'
     )
+  try {
+    JSON.parse(input)
+  } catch (err) {
+    throw new Error(`Invalid GCScript. JSON error. ${err}`)
+  }
   return {
     apiVersion,
     network,
@@ -2417,9 +2423,6 @@ var stringifyExports = requireStringify()
 var safeJSONStringify = /*@__PURE__*/ getDefaultExportFromCjs(stringifyExports)
 
 /**
- * Based on urlsafe-base64, on version:
- */
-/**
  * .encode
  *
  * return an encoded Buffer as URL Safe Base64
@@ -2454,7 +2457,7 @@ function decode(base64) {
   base64 = base64
     .replace(/\-/g, '+') // Convert '-' to '+'
     .replace(/\_/g, '/') // Convert '_' to '/'
-  return new Buffer(base64, 'base64')
+  return new Buffer$1(base64, 'base64')
 }
 
 /*! pako 2.1.0 https://github.com/nodeca/pako @license (MIT AND Zlib) */
@@ -9697,9 +9700,13 @@ const handler$6 = {
       try {
         //const URLSafeBase64 = require('urlsafe-base64')
         //const pako = await import('pako').then((d) => d.default)
+        // const buff=Buffer.from(pako.ungzip(Buffer.from(URLSafeBase64.decode(msg),'utf-8'),options?.codecOptions||{}));
+        // return resolve(JSON.parse(buff.toString('utf-8')));
+        console.log({ msg, options })
         const buff = Buffer$1.from(
           pako.ungzip(
-            Buffer$1.from(decode(msg).toString('utf-8'), 'utf-8'),
+            Uint8Array.from(decode(msg)),
+            //Buffer.from(URLSafeBase64.decode(msg),'utf-8'),
             options?.codecOptions || {}
           )
         )
@@ -10895,7 +10902,7 @@ var HtmlEncoder = async (args) => {
   }
 }
 
-var ReactEncoder = async (args) => {
+var ReactEncoder$1 = async (args) => {
   try {
     throw new Error('Not implemented yet')
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -10941,11 +10948,166 @@ var encode = {
   button: ButtonEncoder,
   html: HtmlEncoder,
   express: ExpressEncoder,
+  react: ReactEncoder$1
+}
+
+// import urlEncoder from '../../encodings/url'
+const baseTemplate = (args) => {
+  const isNode = typeof process === 'object' && typeof window !== 'object'
+  const title = 'Cardano React Dapp Boilerplate'
+  const strProp = (str) =>
+    str === undefined ? 'undefined' : JSON.stringify(str)
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='UTF-8'>
+    <title>${title}</title>
+    <script src='https://unpkg.com/react@18.2.0/umd/react.production.min.js'></script>
+    <script src='https://unpkg.com/react-dom@18.2.0/umd/react-dom.production.min.js'></script>
+    <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>
+    <script src='dist/browser.min.js'></script>
+    <style>
+    * { margin: 0; background: #334d56; color: #fff; }
+    body { padding: 30px; box-sizing: content-box; }
+    span { font-size: 50px; margin: 10px; }
+    .centered { text-align: center; }
+    .qrImage { height:65vh; }
+    </style>
+  </head>
+  <body>
+    <div id='root'></div>
+
+    <script type='text/babel'>
+      
+      const {gc,encodings} = window;
+
+      const App=()=>{
+        const _gcscript=${args.input};
+        //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
+        //so this way executed scripts data exports can be captured back on the hosted dapp
+        _gcscript.returnURLPattern = \`\${window.location.origin + window.location.pathname}?result={result}\`;
+        const [gcscript,setGCscript]=React.useState(_gcscript);
+        const [url,setUrl]=React.useState('');
+        const [qr,setQr]  =React.useState('');
+        const [result,setResult]  =React.useState(null);
+
+        React.useEffect(()=>{
+          const currentUrl = new URL(window.location.href);
+          const msg        = currentUrl.searchParams.get("result");
+
+          if(msg){
+            _gcscript.returnURLPattern
+            encodings.msg.decoder(msg)
+              .then(newResult=>{
+                console.log({newResult,msg});
+                setResult(newResult);
+                //avoids current url carrying latest results all the time
+                window.history.pushState({}, '', window.location.pathname);
+              })
+              .catch(console.error)
+          }
+
+          gc.encode.url({
+            input:JSON.stringify(gcscript),
+            apiVersion:${strProp(args?.apiVersion)},
+            network:${strProp(args?.network)},
+            encoding:${strProp(args?.encoding)},
+          })
+            .then(newUrl=>setUrl(newUrl))
+            .catch(console.error)
+
+          gc.encode.qr({
+            input:JSON.stringify(gcscript),
+            apiVersion:${strProp(args?.apiVersion)},
+            network:${strProp(args?.network)},
+            encoding:${strProp(args?.encoding)},
+
+            qrResultType:${strProp(args?.qrResultType)},
+            outputFile:${strProp(args?.outputFile)},
+            template:${strProp(args?.template)},
+            styles:${strProp(args?.styles)},                        
+          })
+            .then(newQr=>setQr(newQr))
+            .catch(console.error)
+
+      },[gcscript]);
+
+        return <div class="centered">
+          <h1>${title}</h1>
+          <br/>
+          {result && <div>
+            <h3>this is the response from the wallet:</h3>
+            <pre style={{textAlign:"left"}}>{JSON.stringify(result,null,2)}</pre>
+            <br/>
+            <a href="#" onClick={()=>setResult(null)}><h2>Reset</h2></a>
+          </div>}
+          {!result && <div>
+            <h3>connect with wallet by clicking on this link:</h3>
+            <a href={url}><h2>Connect</h2></a>
+            <br/><br/>
+            <h3>or by scanning the QR code with wallet or mobile camera:</h3>
+            <img class="qrImage" src={qr}/>
+          </div>}
+          <br/><br/>
+          <i>Created with <a href="#">${
+            isNode ? 'gamechanger-cli' : 'gamechanger lib'
+          }</a></i>
+        </div>
+      }
+      ReactDOM.render(<App />, document.querySelector('#root'));
+    </script>
+  </body>
+</html>  
+`
+}
+var ReactEncoder = async (args) => {
+  try {
+    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
+    return baseTemplate({
+      apiVersion,
+      network,
+      encoding,
+      input,
+      qrResultType: args?.qrResultType,
+      outputFile: args?.outputFile,
+      template: args?.template,
+      styles: args?.styles
+    })
+  } catch (err) {
+    if (err instanceof Error)
+      throw new Error('URL generation failed. ' + err?.message)
+    else throw new Error('URL generation failed. ' + 'Unknown error')
+  }
+}
+// For importing on html document:
+// Install:
+//   $ npm install -s gamechanger
+//     or
+//   copy host individual file 'dist/browser.min.js'
+// Load:
+//   \\<script src='dist/browser.min.js'\\>\\</script\\>
+// Use:
+//   const {gc} = window;
+// For webpack projects like using create-react-app:
+// Install:
+//   $ npm install -s gamechanger
+// Use:
+//   import {gc} from 'gamechanger'
+
+// import ButtonEncoder from './button'
+// import HtmlEncoder from './html'
+// import ExpressEncoder from './express'
+var snippet = {
+  // button: ButtonEncoder,
+  // html: HtmlEncoder,
+  // express: ExpressEncoder,
   react: ReactEncoder
 }
 
 var _handlers = {
-  encode
+  encode,
+  snippet
 }
 // import { ActionHandlerType} from '../types';
 // import URLEncoder from './encode/url';

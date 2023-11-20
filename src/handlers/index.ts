@@ -1,6 +1,8 @@
 import encode from './encode'
+import snippet from './snippet'
 export default {
-  encode
+  encode,
+  snippet
 }
 
 // import { ActionHandlerType} from '../types';

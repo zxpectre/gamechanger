@@ -1,3 +1,5 @@
+import { Buffer } from 'buffer'
+
 /**
  * Based on urlsafe-base64, on version:
  */

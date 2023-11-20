@@ -5,6 +5,26 @@ import getStdin from 'get-stdin'
 import fs from 'fs'
 import dataURItoBuffer from 'data-uri-to-buffer'
 import path from 'path'
+import express from 'express'
+
+export const serveHtml = ({
+  indexHtml,
+  host = 'localhost',
+  port = 3000,
+  libPath = 'dist'
+}) => {
+  const app = express()
+  // app.use(express.static(libPath))
+  app.use('/dist', express.static(libPath))
+  app.get('/', (req, res) => {
+    res.send(indexHtml)
+  })
+  app.listen(port, () =>
+    console.log(
+      `\n\n🚀 Serving output with the hosted Gamechanger library on http://${host}:${port}\n\n`
+    )
+  )
+}
 
 export default async function main() {
   const { usageMessage, QRRenderTypes } = config
@@ -53,6 +73,10 @@ export default async function main() {
         debug: {
           type: 'boolean',
           alias: 'd'
+        },
+        serve: {
+          type: 'boolean',
+          alias: 'S'
         }
       }
     })
@@ -99,6 +123,8 @@ export default async function main() {
     const template = cli.flags.template
     const styles = cli.flags.styles
 
+    const serve = !!cli.flags.serve
+
     let qrResultType = 'png'
     if (outputFile) {
       const detectedType = QRRenderTypes.find((x) =>
@@ -125,20 +151,29 @@ export default async function main() {
     })
 
     if (output) {
-      if (output.startsWith('data:')) {
+      if (output.trim().startsWith('data:')) {
         const dataURI = output
+        const parsedDataUri = dataURItoBuffer(dataURI)
 
         if (outputFile) {
           const filePath = path.resolve(process.cwd(), `./${outputFile}`)
           if (debug)
             console.log(
               `Writing file ${filePath}...${String(
-                dataURItoBuffer(dataURI)?.typeFull || ''
+                parsedDataUri?.typeFull || ''
               ).slice(0, 20)}`
             )
-          fs.writeFileSync(filePath, dataURItoBuffer(dataURI), 'utf8')
+          fs.writeFileSync(filePath, parsedDataUri, 'utf8')
         } else {
-          process.stdout.write(dataURItoBuffer(dataURI))
+          process.stdout.write(parsedDataUri)
+        }
+        if (serve) {
+          if (output.trim().startsWith('data:text/html')) {
+            const indexHtml = parsedDataUri.toString('utf8')
+            if (indexHtml.trim().startsWith('<!DOCTYPE html>')) {
+              serveHtml({ indexHtml })
+            }
+          }
         }
       } else {
         console.info(output)

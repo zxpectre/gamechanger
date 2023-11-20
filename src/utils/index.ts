@@ -59,7 +59,11 @@ export const validateBuildMsgArgs = (args: {
     throw new Error(
       'Wrong input type. GCScript must be presented as JSON string'
     )
-
+  try {
+    JSON.parse(input)
+  } catch (err) {
+    throw new Error(`Invalid GCScript. JSON error. ${err}`)
+  }
   return {
     apiVersion,
     network,

@@ -25,9 +25,14 @@ const handler: EncodingHandler = {
       try {
         //const URLSafeBase64 = require('urlsafe-base64')
         //const pako = await import('pako').then((d) => d.default)
+
+        // const buff=Buffer.from(pako.ungzip(Buffer.from(URLSafeBase64.decode(msg),'utf-8'),options?.codecOptions||{}));
+        // return resolve(JSON.parse(buff.toString('utf-8')));
+        console.log({ msg, options })
         const buff = Buffer.from(
           pako.ungzip(
-            Buffer.from(URLSafeBase64.decode(msg).toString('utf-8'), 'utf-8'),
+            Uint8Array.from(URLSafeBase64.decode(msg)),
+            //Buffer.from(URLSafeBase64.decode(msg),'utf-8'),
             options?.codecOptions || {}
           )
         )
