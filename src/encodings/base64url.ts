@@ -3,6 +3,7 @@ import { EncodingHandler } from '../types'
 import safeJSONStringify from 'json-stringify-safe'
 //import URLSafeBase64 from 'urlsafe-base64'
 import * as URLSafeBase64 from '../modules/urlsafe-base64'
+import { Buffer } from 'buffer'
 
 const handler: EncodingHandler = {
   name: 'URL Safe Base64',
@@ -14,11 +15,8 @@ const handler: EncodingHandler = {
     )
   },
   decoder: (msg: string /*,_options?:any*/) => {
-    const URLSafeBase64 = require('urlsafe-base64')
     return Promise.resolve(
-      JSON.parse(
-        Buffer.from(URLSafeBase64.decode(msg), 'utf-8').toString('utf-8')
-      )
+      JSON.parse(URLSafeBase64.decode(msg).toString('utf-8'))
     )
   }
 }

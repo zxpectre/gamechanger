@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-import { testDeps } from '../dist/nodejs.cjs'
-testDeps()
+import { _testDeps } from '../dist/nodejs.cjs'
+_testDeps()

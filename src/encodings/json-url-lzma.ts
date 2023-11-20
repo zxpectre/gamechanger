@@ -23,6 +23,7 @@ import { EncodingHandler } from '../types'
 // }
 //import URLSafeBase64 from 'urlsafe-base64'
 import * as URLSafeBase64 from '../modules/urlsafe-base64'
+import { Buffer } from 'buffer'
 
 //In-House:
 const handler: EncodingHandler = {
@@ -38,7 +39,13 @@ const handler: EncodingHandler = {
     const packed = JSON.stringify(obj)
     const compressed = await lzmaCodec.compress(packed)
     //const encoded = (await import(/* webpackChunkName: "'urlsafe-base64" */ 'urlsafe-base64')).encode(compressed);
-    const encoded = URLSafeBase64.encode(compressed)
+    const encoded = URLSafeBase64.encode(Buffer.from(compressed))
+    // console.log({
+    //   packed,
+    //   compressed,
+    //   encoded,
+    //   altern: Buffer.from(compressed).toString('base64')
+    // })
     return encoded
   },
   decoder: async (msg: string /*,_options?:any*/) => {

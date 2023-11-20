@@ -45,7 +45,7 @@ const baseTemplate = (args: {
     <div id='root'></div>
 
     <script type='text/babel'>
-      
+      // import {gc,encodings} from 'gamechanger'
       const {gc,encodings} = window;
 
       const App=()=>{

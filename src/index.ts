@@ -1,5 +1,5 @@
-//import _testDeps from './tests/deps'
-import { usageMessage, QRRenderTypes } from './config'
+import testDeps from './tests/deps'
+import { usageMessage, QRRenderTypes, GCDomains, contact } from './config'
 
 import _handlers from './handlers'
 import _encodings from './encodings'
@@ -15,8 +15,10 @@ export default _handlers
 
 export const config = {
   usageMessage,
-  QRRenderTypes
+  QRRenderTypes,
+  GCDomains,
+  contact
 }
-//export const testDeps = _testDeps
+export const _testDeps = testDeps
 
 //TODO: check https://github.com/knightedcodemonkey/duel

@@ -24,168 +24,6 @@ function _mergeNamespaces(n, m) {
   return Object.freeze(n)
 }
 
-const cliName = 'gamechanger-dapp-cli'
-const networks = ['mainnet', 'preprod']
-const apiVersions = ['1', '2']
-const apiEncodings = {
-  1: ['json-url-lzw'],
-  2: ['json-url-lzma', 'gzip', 'base64url']
-}
-const GCDappConnUrls = {
-  1: {
-    mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
-    preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
-  },
-  2: {
-    mainnet: 'https://beta-wallet.gamechanger.finance/api/2/run/{gcscript}',
-    preprod:
-      'https://beta-preprod-wallet.gamechanger.finance/api/2/run/{gcscript}'
-  }
-}
-const QRRenderTypes = ['png', 'svg']
-const demoGCS = {
-  type: 'tx',
-  title: 'Demo',
-  description: 'created with ' + cliName,
-  metadata: {
-    123: {
-      message: 'Hello World!'
-    }
-  }
-}
-const demoPacked =
-  'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
-const escapeShellArg = (arg) =>
-  // eslint-disable-next-line quotes
-  `'${arg.replace(/'/g, "'\\''")}'`
-const usageMessage = `
-GameChanger Wallet CLI:
-	Harness the power of Cardano with this simple dApp connector generator for GameChanger Wallet.
-	Build GCscripts, JSON-based scripts that gets packed into ready to use URL dApp connectors!
-
-Usage
-	$ ${cliName} [network] [action] [subaction]
-
-Networks: ${networks.map((x) => `'${x}'`).join(' | ')}
-
-Actions:
-	'encode':
-		'url'     : generates a ready to use URL dApp connector from a valid GCScript
-		'qr'      : generates a ready to use URL dApp connector encoded into a QR code image from a valid GCScript
-		'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
-		'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
-		'nodejs'  : generates a ready to use Node JS dApp with a URL connector from a valid GCScript
-		'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
-Options:
-	--args [gcscript] | -a [gcscript]:  Load GCScript from arguments
-	--file [filename] | -a [filename]:  Load GCScript from file
-	without --args or --file         :  Load GCScript from stdin
-
-	--outputFile [filename] -o [filename]:  The QR Code, HTML, button, nodejs, or react output filename
-	without --outputFile                 :  Sends the QR Code, HTML, button, nodejs, or react output file to stdin
-
-	--template [template name] | -t [template name]: default, boxed or printable
-
-Examples
-
-	$ ${cliName} mainnet encode url -f demo.gcscript
-	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ ${cliName} preprod encode url -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ cat demo.gcscript | ${cliName} mainnet encode url
-	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
-
-	$ ${cliName} preprod encode qr -a ${escapeShellArg(JSON.stringify(demoGCS))}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} > qr_output.png
-
-	$ ${cliName} preprod encode qr -o qr_output.png -a ${escapeShellArg(
-  JSON.stringify(demoGCS)
-)}
-	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} 
-`
-
-const DefaultNetwork = 'mainnet'
-const DefaultAPIVersion = '2'
-const DefaultAPIEncodings = {
-  1: 'json-url-lzw',
-  2: 'gzip'
-}
-const DefaultQRTemplate = 'boxed'
-const DefaultQRTitle = 'Dapp Connection'
-const DefaultQRSubTitle = 'scan to execute | escanear para ejecutar'
-
-//import path from 'node:path'
-//import * as path from 'path'
-// export const resolveGlobal = async (file) => {
-//   //const path = await import('path').then(d=>d.default);
-//   var commonjsGlobal =
-//     typeof window !== 'undefined'
-//       ? window
-//       : typeof global !== 'undefined'
-//       ? global
-//       : this
-//   console.log({ path, commonjsGlobal })
-//   if (!commonjsGlobal) throw new Error('Missing global')
-//   return path.resolve('dist/', file)
-// }
-const validateBuildMsgArgs = (args) => {
-  const network = args?.network ? args?.network : DefaultNetwork
-  if (!networks.includes(network)) {
-    throw new Error(`Unknown Cardano network specification '${network || ''}'`)
-  }
-  const apiVersion = args?.apiVersion ? args?.apiVersion : DefaultAPIVersion
-  if (!apiVersions.includes(apiVersion))
-    throw new Error(`Unknown API version '${apiVersion || ''}'`)
-  const defaultEncoding = DefaultAPIEncodings[apiVersion]
-  const encoding = args?.encoding ? args?.encoding : defaultEncoding
-  if (!apiEncodings[apiVersion].includes(encoding))
-    throw new Error(
-      `Unknown encoding '${encoding || ''}' for API version '${
-        apiVersion || ''
-      }'`
-    )
-  const input = args?.input
-  if (!input) throw new Error('Empty GCScript provided')
-  if (typeof input !== 'string')
-    throw new Error(
-      'Wrong input type. GCScript must be presented as JSON string'
-    )
-  try {
-    JSON.parse(input)
-  } catch (err) {
-    throw new Error(`Invalid GCScript. JSON error. ${err}`)
-  }
-  return {
-    apiVersion,
-    network,
-    encoding,
-    input
-  }
-}
-// export const getPlatform = () => {
-//   try {
-//     // Check if the environment is Node.js
-//     if (typeof process === 'object' && typeof require === 'function') {
-//       return 'nodejs'
-//     }
-//   } catch (err) {}
-//   // try {
-//   //   // Check if the environment is a
-//   //   // Service worker
-//   //   if (typeof importScripts === 'function') {
-//   //     return 'worker'
-//   //   }
-//   // } catch (err) {}
-//   try {
-//     // Check if the environment is a Browser
-//     if (typeof window === 'object') {
-//       return 'browser'
-//     }
-//   } catch (err) {}
-// }
-
 var global$1 =
   typeof global !== 'undefined'
     ? global
@@ -2423,6 +2261,10 @@ var stringifyExports = requireStringify()
 var safeJSONStringify = /*@__PURE__*/ getDefaultExportFromCjs(stringifyExports)
 
 /**
+ * Based on urlsafe-base64, on version:
+ */
+const version = '1.0.0'
+/**
  * .encode
  *
  * return an encoded Buffer as URL Safe Base64
@@ -2459,6 +2301,26 @@ function decode(base64) {
     .replace(/\_/g, '/') // Convert '_' to '/'
   return new Buffer$1(base64, 'base64')
 }
+/**
+ * .validate
+ *
+ * Validates a string if it is URL Safe Base64 encoded.
+ *
+ * @param {String}
+ * @return {Boolean}
+ * @api public
+ */
+function validate(base64) {
+  return /^[A-Za-z0-9\-_]+$/.test(base64)
+}
+
+var URLSafeBase64 = /*#__PURE__*/ Object.freeze({
+  __proto__: null,
+  decode: decode,
+  encode: encode$1,
+  validate: validate,
+  version: version
+})
 
 /*! pako 2.1.0 https://github.com/nodeca/pako @license (MIT AND Zlib) */
 // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -4796,7 +4658,7 @@ const deflate_slow = (s, flush) => {
         s.match_length <= 5 &&
         (s.strategy === Z_FILTERED ||
           (s.match_length === MIN_MATCH &&
-            s.strstart - s.match_start > 4096)) /*TOO_FAR*/
+            s.strstart - s.match_start > 4096) /*TOO_FAR*/)
       ) {
         /* If prev_match is also MIN_MATCH, match_start is garbage
          * but we will ignore the current match anyway.
@@ -9679,225 +9541,6 @@ var pako = {
   constants: constants_1
 }
 
-const handler$6 = {
-  name: 'GZip',
-  encoder: (obj, options) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const buff = Buffer$1.from(
-          pako.gzip(
-            Buffer$1.from(safeJSONStringify(obj), 'utf-8'),
-            options?.codecOptions || {}
-          )
-        )
-        return resolve(encode$1(buff))
-      } catch (err) {
-        return reject(err)
-      }
-    }),
-  decoder: (msg, options) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        //const URLSafeBase64 = require('urlsafe-base64')
-        //const pako = await import('pako').then((d) => d.default)
-        // const buff=Buffer.from(pako.ungzip(Buffer.from(URLSafeBase64.decode(msg),'utf-8'),options?.codecOptions||{}));
-        // return resolve(JSON.parse(buff.toString('utf-8')));
-        console.log({ msg, options })
-        const buff = Buffer$1.from(
-          pako.ungzip(
-            Uint8Array.from(decode(msg)),
-            //Buffer.from(URLSafeBase64.decode(msg),'utf-8'),
-            options?.codecOptions || {}
-          )
-        )
-        return resolve(JSON.parse(buff.toString('utf-8')))
-      } catch (err) {
-        return reject(err)
-      }
-    })
-}
-
-//import jsonUrl from 'json-url/dist/browser/json-url-single'
-//import jsonUrl from 'json-url/dist/node/index'
-//import lzmaCodec from 'json-url/dist/node/codecs/lzma'
-//const lzmaCodec = jsonUrl.default('lzma')
-//JSON-URL:
-//Very hard to dual import for browser and node at the same time
-// const handler: EncodingHandler = {
-//   name: 'JSON-URL LZMA',
-//   encoder: async (obj: any /*,_options?:any*/) => {
-//     const jsonUrl = await import('../modules/json-url').then((d) => d.default())
-//     const lzmaCodec = jsonUrl('lzma')
-//     //const lzmaCodec = await import('json-url').then((d) => d.default('lzma'))
-//     return lzmaCodec.compress(obj)
-//   },
-//   decoder: async (msg: string /*,_options?:any*/) => {
-//     //const lzmaCodec = await import('json-url').then((d) => d.default('lzma'))
-//     const jsonUrl = await import('../modules/json-url').then((d) => d.default())
-//     const lzmaCodec = jsonUrl('lzma')
-//     return lzmaCodec.decompress(msg)
-//   }
-// }
-//import URLSafeBase64 from 'urlsafe-base64'
-//In-House:
-const handler$5 = {
-  name: 'JSON-URL LZMA',
-  encoder: async (obj /*,_options?:any*/) => {
-    // const lzmaLib = await import(
-    //   /* webpackChunkName: "lzma" */ 'lzma/src/lzma_worker'
-    // )
-    // // this special condition is present because the web minified version has a slightly different export
-    // const lzmaCodec = lzmaLib?.compress ? lzmaLib : lzmaLib.LZMA
-    const lzmaCodec = await Promise.resolve()
-      .then(function () {
-        return lzma$1
-      })
-      .then((d) => d.default())
-    // we use exact algorithm and libs as in json-url
-    const packed = JSON.stringify(obj)
-    const compressed = await lzmaCodec.compress(packed)
-    //const encoded = (await import(/* webpackChunkName: "'urlsafe-base64" */ 'urlsafe-base64')).encode(compressed);
-    const encoded = encode$1(compressed)
-    return encoded
-  },
-  decoder: async (msg /*,_options?:any*/) => {
-    // const lzmaLib = await import(
-    //   /* webpackChunkName: "lzma" */ 'lzma/src/lzma_worker'
-    // )
-    // // this special condition is present because the web minified version has a slightly different export
-    // const lzmaCodec = lzmaLib?.compress ? lzmaLib : lzmaLib.LZMA
-    const lzmaCodec = await Promise.resolve()
-      .then(function () {
-        return lzma$1
-      })
-      .then((d) => d.default())
-    // we use exact algorithm and libs as in json-url
-    const decoded = decode(msg)
-    const decompressed = await lzmaCodec.decompress(decoded)
-    const unpacked = JSON.parse(decompressed)
-    return unpacked
-  }
-}
-
-const handler$4 = {
-  name: 'JSON-URL LZW',
-  encoder: async (obj /*,_options?:any*/) => {
-    const jsonUrl = await Promise.resolve()
-      .then(function () {
-        return jsonUrl$1
-      })
-      .then((d) => d.default())
-    const lzwCodec = jsonUrl('lzw')
-    return lzwCodec.compress(obj)
-  },
-  decoder: async (msg /*,_options?:any*/) => {
-    const jsonUrl = await Promise.resolve()
-      .then(function () {
-        return jsonUrl$1
-      })
-      .then((d) => d.default())
-    const lzwCodec = jsonUrl('lzw')
-    return lzwCodec.decompress(msg)
-  }
-}
-
-const handler$3 = {
-  name: 'URL Safe Base64',
-  encoder: (obj /*,_options?:any*/) => {
-    // const safeJSONStringify = require('json-stringify-safe')
-    // const URLSafeBase64 = require('urlsafe-base64')
-    return Promise.resolve(
-      encode$1(Buffer.from(safeJSONStringify(obj), 'utf-8'))
-    )
-  },
-  decoder: (msg /*,_options?:any*/) => {
-    const URLSafeBase64 = require('urlsafe-base64')
-    return Promise.resolve(
-      JSON.parse(
-        Buffer.from(URLSafeBase64.decode(msg), 'utf-8').toString('utf-8')
-      )
-    )
-  }
-}
-
-//import { baseEncodings } from '.'
-const msgEncodings = {
-  gzip: handler$6,
-  'json-url-lzma': handler$5,
-  'json-url-lzw': handler$4,
-  base64url: handler$3
-}
-/**
- * Map of encoders and their message headers. Headers are used to auto-detect which decoder needs to be used to decode the message
- *
- * Sorted from worst to best compression for average message bodies
- */
-const EncodingByHeaders = {
-  '0-': 'base64url',
-  XQ: 'json-url-lzma',
-  wo: 'json-url-lzw',
-  '1-': 'gzip' //gc wallet v2
-}
-/**
- * Map of message headers and their encoders.
- */
-const HeadersByEncoders = Object.fromEntries(
-  Object.entries(EncodingByHeaders).map(([header, encoding]) => [
-    encoding,
-    header
-  ])
-)
-/**
- * Async loaders for the required encoding handlers, as a map.
- */
-Object.fromEntries(
-  Object.keys(HeadersByEncoders).map((encoder) => {
-    const loader = () =>
-      import(`./${encoder}`).then((module) => module?.default)
-    return [encoder, loader]
-  })
-)
-const handler$2 = {
-  name: 'Packed GCScript or data message with header',
-  encoder: async (obj, options) => {
-    const useEncoding =
-      options?.encoding || DefaultAPIEncodings[DefaultAPIVersion] // use an specific encoder or use the default one
-    // const handlerLoader = EncodingHandlers[useEncoding]
-    // if (!handlerLoader) throw new Error('Unknown encoder. Cannot encode')
-    const codec = msgEncodings[useEncoding] //await handlerLoader()
-    if (!codec) throw new Error('Unknown encoder. Cannot encode')
-    const header = HeadersByEncoders[useEncoding]
-    if (!header) throw new Error('Unknown encoder header. Cannot encode')
-    const msgBody = await codec.encoder(obj, options?.encodingOptions)
-    const msg = `${['XQ', 'wo'].includes(header) ? '' : header}${msgBody}` //legacy modes has no added header
-    return msg
-  },
-  decoder: async (msg, options) => {
-    if (!msg) throw new Error('Empty data. Cannot decode')
-    let detectedEnconding = undefined
-    let useHeader = ''
-    Object.keys(EncodingByHeaders).forEach((header) => {
-      if (!detectedEnconding && msg.startsWith(header)) {
-        detectedEnconding = EncodingByHeaders[header]
-        useHeader = header
-      }
-    })
-    if (!detectedEnconding)
-      throw new Error('Unknown decoder header. Cannot decode')
-    if (options?.encoding && detectedEnconding !== options?.encoding)
-      throw new Error('Unexpected encoding detected. Cannot decode')
-    // const handlerLoader = EncodingHandlers[detectedEnconding]
-    // if (!handlerLoader) throw new Error('Unknown decoder. Cannot decode')
-    const codec = msgEncodings[detectedEnconding] //await handlerLoader()
-    if (!codec) throw new Error('Unknown decoder. Cannot decode')
-    const useMsg = !['XQ', 'wo'].includes(useHeader) //legacy modes has no header actually
-      ? msg.replace(useHeader, '')
-      : msg
-    const obj = await codec.decoder(useMsg, options?.encodingOptions)
-    return obj
-  }
-}
-
 var stringPlaceholder
 var hasRequiredStringPlaceholder
 
@@ -10043,6 +9686,513 @@ function requireStringPlaceholder() {
 
 var stringPlaceholderExports = requireStringPlaceholder()
 var template = /*@__PURE__*/ getDefaultExportFromCjs(stringPlaceholderExports)
+
+// import logoURL from '../assets/images/dapp-logo-bg.png'
+// import backgroundURL from '../assets/images/background.png'
+// import fontURL from '../assets/fonts/ABSTRACT.ttf'
+
+/**
+ * It has been very hard to allow dual support for browser and nodejs due to dependencies conflicts.
+ * This is un ugly unified test for now, should be improved
+ */
+var testDeps = async () => {
+  const isNode = typeof process === 'object' && typeof window !== 'object'
+  console.info(
+    `Running dependencies test on '${isNode ? 'nodejs' : 'browser'}'`
+  )
+  console.log({ Buffer: Buffer$1 })
+  console.log({ safeJSONStringify })
+  console.log({ safeJSONStringify })
+  console.log({ URLSafeBase64 })
+  console.log({ pako })
+
+  //   const jsonUrl = await import('json-url/dist/node/loaders').then(
+  //     (d) => d.default
+  //   )
+  //   console.log({ jsonUrl })
+  //   const lzwCodec = await jsonUrl['lzw']()
+  //   const lzmaCodec = await jsonUrl['lzma']()
+
+  //const jsonUrl = await import('json-url').then((d) => d.default)
+  const jsonUrl = await Promise.resolve()
+    .then(function () {
+      return jsonUrl$1
+    })
+    .then((d) => d.default())
+    .catch((err) => {
+      console.error(err)
+      return undefined
+    })
+
+  const lzwCodec = jsonUrl('lzw') //jsonUrl ? jsonUrl('lzw') : undefined
+  console.log({ lzwCodec })
+
+  //const lzmaCodec = jsonUrl('lzma')
+  //   const lzmaLib = await import('lzma/src/lzma_worker.js')
+  //   //const lzmaLib = await import('lzma')
+  //   console.log({ lzmaLib })
+  //   const lzmaCodec = lzmaLib?.compress ? lzmaLib : lzmaLib.LZMA
+  const lzmaCodec = await Promise.resolve()
+    .then(function () {
+      return lzma$1
+    })
+    .then((d) => d.default())
+  console.log({ lzmaCodec })
+  //const template = await import('string-placeholder').then((d) => d.default)
+  //const template = require('string-placeholder')
+
+  console.log({ template })
+
+  console.log({
+    Buffer: Buffer$1.from('Hello').toString('hex'),
+    safeJSONStringify: safeJSONStringify({ foo: 'bar' }),
+    URLSafeBase64: encode$1(Buffer$1.from('Hello')),
+    pako: Buffer$1.from(
+      pako.gzip(Buffer$1.from(safeJSONStringify({ foo: 'bar' }), 'utf-8'))
+    ).toString('hex'),
+    lzwCodec: jsonUrl
+      ? await lzwCodec.compress({ foo: 'bar' })
+      : 'disabled due to an error', //It is expected to fail for now
+
+    lzmaCodec: encode$1(
+      Buffer$1.from(await lzmaCodec.compress({ foo: 'bar' }))
+    ),
+    template: template(
+      'hello {word}',
+      { word: 'world' },
+      {
+        before: '{',
+        after: '}'
+      }
+    )
+    // logoURL, //: await import('./assets/images/dapp-logo-bg.png'),
+    // backgroundURL, //: await import('./assets/images/background.png')
+    // fontURL
+  })
+
+  return 'OK'
+}
+
+const cliName = 'gamechanger-cli'
+const networks = ['mainnet', 'preprod']
+const apiVersions = ['1', '2']
+const apiEncodings = {
+  1: ['json-url-lzw'],
+  2: ['json-url-lzma', 'gzip', 'base64url']
+}
+const GCDomains = {
+  1: {
+    mainnet: 'https://wallet.gamechanger.finance/',
+    preprod: 'https://preprod-wallet.gamechanger.finance/'
+  },
+  2: {
+    mainnet: 'https://beta-wallet.gamechanger.finance/',
+    preprod: 'https://beta-preprod-wallet.gamechanger.finance/'
+  }
+}
+const contact = {
+  website: 'https://gamechanger.finance',
+  github: 'https://github.com/GameChangerFinance/gamechanger.wallet/',
+  twitter: 'https://twitter.com/GameChangerOk',
+  discord: 'https://discord.gg/vpbfyRaDKG',
+  youtube: 'https://www.youtube.com/@gamechanger.finance',
+  playgroundDiscord:
+    'https://discord.com/channels/912354788795109396/921687306241458207'
+}
+const GCDappConnUrls = {
+  1: {
+    mainnet: 'https://wallet.gamechanger.finance/api/1/tx/{gcscript}',
+    preprod: 'https://preprod-wallet.gamechanger.finance/api/1/tx/{gcscript}'
+  },
+  2: {
+    mainnet: 'https://beta-wallet.gamechanger.finance/api/2/run/{gcscript}',
+    preprod:
+      'https://beta-preprod-wallet.gamechanger.finance/api/2/run/{gcscript}'
+  }
+}
+const QRRenderTypes = ['png', 'svg']
+const demoGCS = {
+  type: 'tx',
+  title: 'Demo',
+  description: 'created with ' + cliName,
+  metadata: {
+    123: {
+      message: 'Hello World!'
+    }
+  }
+}
+const demoPacked =
+  'woTCpHR5cGXConR4wqV0aXRsZcKkRGVtb8KrZGVzY3JpcMSKb27DmSHEmGVhdGVkIHfEi2ggZ2FtZWNoYW5nZXItZGFwcC1jbGnCqMSudGHEuMWCwoHCozEyM8KBwqfErnNzYcS0wqxIZWxsbyBXb3JsZCE'
+const escapeShellArg = (arg) =>
+  // eslint-disable-next-line quotes
+  `'${arg.replace(/'/g, "'\\''")}'`
+const usageMessage = `
+GameChanger Wallet CLI:
+	Harness the power of Cardano with this simple dApp connector generator for GameChanger Wallet.
+	Build GCscripts, JSON-based scripts that gets packed into ready to use URL dApp connectors!
+
+Usage
+	$ ${cliName} [network] [action] [subaction]
+
+Networks: ${networks.map((x) => `'${x}'`).join(' | ')}
+
+Actions:
+	'encode':
+		'url'     : generates a ready to use URL dApp connector from a valid GCScript
+		'qr'      : generates a ready to use URL dApp connector encoded into a QR code image from a valid GCScript
+	'snippet':
+		'html'    : generates a ready to use HTML dApp with a URL connector from a valid GCScript
+		'button'  : generates a ready to use HTML embeddable button snippet with a URL connector from a valid GCScript
+		'nodejs'  : generates a ready to use Node JS dApp with a URL connector from a valid GCScript
+		'react'   : generates a ready to use React dApp with a URL connector from a valid GCScript
+Options:
+	--args [gcscript] | -a [gcscript]:  Load GCScript from arguments
+
+	--file [filename] | -a [filename]:  Load GCScript from file
+	without --args or --file         :  Load GCScript from stdin
+
+	--outputFile [filename] -o [filename]:  The QR Code, HTML, button, nodejs, or react output filename
+	without --outputFile                 :  Sends the QR Code, HTML, button, nodejs, or react output file to stdin
+
+	--apiVersion [1 | 2] | -v [1 | 2]:  Target GameChanger Wallet v1 or v2
+
+	--encoding [see encodings below] | -v [see encodings below]:  Target GameChanger Wallet v1 or v2 messaging encodings
+	Valid encodings by apiVersion:
+	${JSON.stringify(apiEncodings)}
+
+	--template [see templates below] | -t [see templates below]: QR code predefined styles
+	Valid templates: default, boxed or printable
+
+	--serve | -S : Serve code snippet outputs on http://localhost:3000
+
+Examples
+
+	$ ${cliName} mainnet encode url -f demo.gcscript
+	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
+
+	$ ${cliName} preprod encode url -a ${escapeShellArg(JSON.stringify(demoGCS))}
+	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked}
+
+	$ cat demo.gcscript | ${cliName} mainnet encode url
+	https://wallet.gamechanger.finance/api/1/tx/${demoPacked}
+
+	$ ${cliName} preprod encode qr -a ${escapeShellArg(JSON.stringify(demoGCS))}
+	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} > qr_output.png
+
+	$ ${cliName} preprod encode qr -o qr_output.png -a ${escapeShellArg(
+  JSON.stringify(demoGCS)
+)}
+	https://preprod-wallet.gamechanger.finance/api/1/tx/${demoPacked} 
+
+	$ ${cliName} mainnet encode qr -e gzip  -v 2 -f connect.gcscript -o qr_output.png
+
+	$ ${cliName} preprod snippet html -v 2 -S -o htmlDapp.html -f connect.gcscript
+	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+	$ ${cliName} mainnet snippet react -v 2 -S -o reactDapp.html -f connect.gcscript
+	🚀 Serving output with the hosted Gamechanger library on http://localhost:3000
+
+`
+
+const DefaultNetwork = 'mainnet'
+const DefaultAPIVersion = '2'
+const DefaultAPIEncodings = {
+  1: 'json-url-lzw',
+  2: 'gzip'
+}
+const DefaultQRTemplate = 'boxed'
+const DefaultQRTitle = 'Dapp Connection'
+const DefaultQRSubTitle = 'scan to execute | escanear para ejecutar'
+
+//import path from 'node:path'
+//import * as path from 'path'
+// export const resolveGlobal = async (file) => {
+//   //const path = await import('path').then(d=>d.default);
+//   var commonjsGlobal =
+//     typeof window !== 'undefined'
+//       ? window
+//       : typeof global !== 'undefined'
+//       ? global
+//       : this
+//   console.log({ path, commonjsGlobal })
+//   if (!commonjsGlobal) throw new Error('Missing global')
+//   return path.resolve('dist/', file)
+// }
+const validateBuildMsgArgs = (args) => {
+  const network = args?.network ? args?.network : DefaultNetwork
+  if (!networks.includes(network)) {
+    throw new Error(`Unknown Cardano network specification '${network || ''}'`)
+  }
+  const apiVersion = args?.apiVersion ? args?.apiVersion : DefaultAPIVersion
+  if (!apiVersions.includes(apiVersion))
+    throw new Error(`Unknown API version '${apiVersion || ''}'`)
+  const defaultEncoding = DefaultAPIEncodings[apiVersion]
+  const encoding = args?.encoding ? args?.encoding : defaultEncoding
+  if (!apiEncodings[apiVersion].includes(encoding))
+    throw new Error(
+      `Unknown encoding '${encoding || ''}' for API version '${
+        apiVersion || ''
+      }'`
+    )
+  const input = args?.input
+  if (!input) throw new Error('Empty GCScript provided')
+  if (typeof input !== 'string')
+    throw new Error(
+      'Wrong input type. GCScript must be presented as JSON string'
+    )
+  try {
+    JSON.parse(input)
+  } catch (err) {
+    throw new Error(`Invalid GCScript. JSON error. ${err}`)
+  }
+  return {
+    apiVersion,
+    network,
+    encoding,
+    input
+  }
+}
+// export const getPlatform = () => {
+//   try {
+//     // Check if the environment is Node.js
+//     if (typeof process === 'object' && typeof require === 'function') {
+//       return 'nodejs'
+//     }
+//   } catch (err) {}
+//   // try {
+//   //   // Check if the environment is a
+//   //   // Service worker
+//   //   if (typeof importScripts === 'function') {
+//   //     return 'worker'
+//   //   }
+//   // } catch (err) {}
+//   try {
+//     // Check if the environment is a Browser
+//     if (typeof window === 'object') {
+//       return 'browser'
+//     }
+//   } catch (err) {}
+// }
+
+const handler$6 = {
+  name: 'GZip',
+  encoder: (obj, options) =>
+    new Promise(async (resolve, reject) => {
+      try {
+        const buff = Buffer$1.from(
+          pako.gzip(
+            Buffer$1.from(safeJSONStringify(obj), 'utf-8'),
+            options?.codecOptions || {}
+          )
+        )
+        return resolve(encode$1(buff))
+      } catch (err) {
+        return reject(err)
+      }
+    }),
+  decoder: (msg, options) =>
+    new Promise(async (resolve, reject) => {
+      try {
+        //const URLSafeBase64 = require('urlsafe-base64')
+        //const pako = await import('pako').then((d) => d.default)
+        // const buff=Buffer.from(pako.ungzip(Buffer.from(URLSafeBase64.decode(msg),'utf-8'),options?.codecOptions||{}));
+        // return resolve(JSON.parse(buff.toString('utf-8')));
+        //console.log({ msg, options })
+        const buff = Buffer$1.from(
+          pako.ungzip(
+            Uint8Array.from(decode(msg)),
+            //Buffer.from(URLSafeBase64.decode(msg),'utf-8'),
+            options?.codecOptions || {}
+          )
+        )
+        return resolve(JSON.parse(buff.toString('utf-8')))
+      } catch (err) {
+        return reject(err)
+      }
+    })
+}
+
+//import jsonUrl from 'json-url/dist/browser/json-url-single'
+//import jsonUrl from 'json-url/dist/node/index'
+//import lzmaCodec from 'json-url/dist/node/codecs/lzma'
+//const lzmaCodec = jsonUrl.default('lzma')
+//JSON-URL:
+//Very hard to dual import for browser and node at the same time
+// const handler: EncodingHandler = {
+//   name: 'JSON-URL LZMA',
+//   encoder: async (obj: any /*,_options?:any*/) => {
+//     const jsonUrl = await import('../modules/json-url').then((d) => d.default())
+//     const lzmaCodec = jsonUrl('lzma')
+//     //const lzmaCodec = await import('json-url').then((d) => d.default('lzma'))
+//     return lzmaCodec.compress(obj)
+//   },
+//   decoder: async (msg: string /*,_options?:any*/) => {
+//     //const lzmaCodec = await import('json-url').then((d) => d.default('lzma'))
+//     const jsonUrl = await import('../modules/json-url').then((d) => d.default())
+//     const lzmaCodec = jsonUrl('lzma')
+//     return lzmaCodec.decompress(msg)
+//   }
+// }
+//import URLSafeBase64 from 'urlsafe-base64'
+//In-House:
+const handler$5 = {
+  name: 'JSON-URL LZMA',
+  encoder: async (obj /*,_options?:any*/) => {
+    // const lzmaLib = await import(
+    //   /* webpackChunkName: "lzma" */ 'lzma/src/lzma_worker'
+    // )
+    // // this special condition is present because the web minified version has a slightly different export
+    // const lzmaCodec = lzmaLib?.compress ? lzmaLib : lzmaLib.LZMA
+    const lzmaCodec = await Promise.resolve()
+      .then(function () {
+        return lzma$1
+      })
+      .then((d) => d.default())
+    // we use exact algorithm and libs as in json-url
+    const packed = JSON.stringify(obj)
+    const compressed = await lzmaCodec.compress(packed)
+    //const encoded = (await import(/* webpackChunkName: "'urlsafe-base64" */ 'urlsafe-base64')).encode(compressed);
+    const encoded = encode$1(Buffer$1.from(compressed))
+    console.log({
+      packed,
+      compressed,
+      encoded,
+      altern: Buffer$1.from(compressed).toString('base64')
+    })
+    return encoded
+  },
+  decoder: async (msg /*,_options?:any*/) => {
+    // const lzmaLib = await import(
+    //   /* webpackChunkName: "lzma" */ 'lzma/src/lzma_worker'
+    // )
+    // // this special condition is present because the web minified version has a slightly different export
+    // const lzmaCodec = lzmaLib?.compress ? lzmaLib : lzmaLib.LZMA
+    const lzmaCodec = await Promise.resolve()
+      .then(function () {
+        return lzma$1
+      })
+      .then((d) => d.default())
+    // we use exact algorithm and libs as in json-url
+    const decoded = decode(msg)
+    const decompressed = await lzmaCodec.decompress(decoded)
+    const unpacked = JSON.parse(decompressed)
+    return unpacked
+  }
+}
+
+const handler$4 = {
+  name: 'JSON-URL LZW',
+  encoder: async (obj /*,_options?:any*/) => {
+    const jsonUrl = await Promise.resolve()
+      .then(function () {
+        return jsonUrl$1
+      })
+      .then((d) => d.default())
+    const lzwCodec = jsonUrl('lzw')
+    return lzwCodec.compress(obj)
+  },
+  decoder: async (msg /*,_options?:any*/) => {
+    const jsonUrl = await Promise.resolve()
+      .then(function () {
+        return jsonUrl$1
+      })
+      .then((d) => d.default())
+    const lzwCodec = jsonUrl('lzw')
+    return lzwCodec.decompress(msg)
+  }
+}
+
+const handler$3 = {
+  name: 'URL Safe Base64',
+  encoder: (obj /*,_options?:any*/) => {
+    // const safeJSONStringify = require('json-stringify-safe')
+    // const URLSafeBase64 = require('urlsafe-base64')
+    return Promise.resolve(
+      encode$1(Buffer$1.from(safeJSONStringify(obj), 'utf-8'))
+    )
+  },
+  decoder: (msg /*,_options?:any*/) => {
+    return Promise.resolve(JSON.parse(decode(msg).toString('utf-8')))
+  }
+}
+
+//import { baseEncodings } from '.'
+const msgEncodings = {
+  gzip: handler$6,
+  'json-url-lzma': handler$5,
+  'json-url-lzw': handler$4,
+  base64url: handler$3
+}
+/**
+ * Map of encoders and their message headers. Headers are used to auto-detect which decoder needs to be used to decode the message
+ *
+ * Sorted from worst to best compression for average message bodies
+ */
+const EncodingByHeaders = {
+  '0-': 'base64url',
+  XQ: 'json-url-lzma',
+  wo: 'json-url-lzw',
+  '1-': 'gzip' //gc wallet v2
+}
+/**
+ * Map of message headers and their encoders.
+ */
+const HeadersByEncoders = Object.fromEntries(
+  Object.entries(EncodingByHeaders).map(([header, encoding]) => [
+    encoding,
+    header
+  ])
+)
+/**
+ * Async loaders for the required encoding handlers, as a map.
+ */
+Object.fromEntries(
+  Object.keys(HeadersByEncoders).map((encoder) => {
+    const loader = () =>
+      import(`./${encoder}`).then((module) => module?.default)
+    return [encoder, loader]
+  })
+)
+const handler$2 = {
+  name: 'Packed GCScript or data message with header',
+  encoder: async (obj, options) => {
+    const useEncoding =
+      options?.encoding || DefaultAPIEncodings[DefaultAPIVersion] // use an specific encoder or use the default one
+    // const handlerLoader = EncodingHandlers[useEncoding]
+    // if (!handlerLoader) throw new Error('Unknown encoder. Cannot encode')
+    const codec = msgEncodings[useEncoding] //await handlerLoader()
+    if (!codec) throw new Error('Unknown encoder. Cannot encode')
+    const header = HeadersByEncoders[useEncoding]
+    if (!header) throw new Error('Unknown encoder header. Cannot encode')
+    const msgBody = await codec.encoder(obj, options?.encodingOptions)
+    const msg = `${['XQ', 'wo'].includes(header) ? '' : header}${msgBody}` //legacy modes has no added header
+    return msg
+  },
+  decoder: async (msg, options) => {
+    if (!msg) throw new Error('Empty data. Cannot decode')
+    let detectedEnconding = undefined
+    let useHeader = ''
+    Object.keys(EncodingByHeaders).forEach((header) => {
+      if (!detectedEnconding && msg.startsWith(header)) {
+        detectedEnconding = EncodingByHeaders[header]
+        useHeader = header
+      }
+    })
+    if (!detectedEnconding)
+      throw new Error('Unknown decoder header. Cannot decode')
+    if (options?.encoding && detectedEnconding !== options?.encoding)
+      throw new Error('Unexpected encoding detected. Cannot decode')
+    // const handlerLoader = EncodingHandlers[detectedEnconding]
+    // if (!handlerLoader) throw new Error('Unknown decoder. Cannot decode')
+    const codec = msgEncodings[detectedEnconding] //await handlerLoader()
+    if (!codec) throw new Error('Unknown decoder. Cannot decode')
+    const useMsg = !['XQ', 'wo'].includes(useHeader) //legacy modes has no header actually
+      ? msg.replace(useHeader, '')
+      : msg
+    const obj = await codec.decoder(useMsg, options?.encodingOptions)
+    return obj
+  }
+}
 
 const encoder = async (obj, options) => {
   //const template = require('string-placeholder');
@@ -10882,7 +11032,7 @@ var ButtonEncoder = async (args) => {
   }
 }
 
-var HtmlEncoder = async (args) => {
+var HtmlEncoder$1 = async (args) => {
   try {
     throw new Error('Not implemented yet')
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -10946,10 +11096,386 @@ var encode = {
   url: URLEncoder,
   qr: QREncoder,
   button: ButtonEncoder,
-  html: HtmlEncoder,
+  html: HtmlEncoder$1,
   express: ExpressEncoder,
   react: ReactEncoder$1
 }
+
+// import { GCDappConnUrls } from '../../config'
+// import urlEncoder from '../../encodings/url'
+const AstonMaartenTemplate = (args) => {
+  const isNode = typeof process === 'object' && typeof window !== 'object'
+  const strProp = (str) =>
+    str === undefined ? 'undefined' : JSON.stringify(str)
+  const origin =
+    GCDomains[args?.apiVersion || DefaultAPIVersion][
+      args?.network || DefaultNetwork
+    ]
+  const gcscript = JSON.parse(args?.input)
+  const _title = gcscript?.title || 'Cardano HTML5 Dapp Boilerplate'
+  const _description =
+    gcscript?.description ||
+    `Cardano HTML5 Dapp Boilerplate, created with ${
+      isNode ? 'gamechanger-cli' : 'gamechanger lib'
+    }. Using Aston Maarten template.`
+  const cfg = {
+    domain: origin,
+    apiDocRelBasePath: 'doc/api/v2',
+    contact
+  }
+  const encodings = apiEncodings[args?.apiVersion || DefaultAPIVersion]
+  const returnURLTip =
+    args?.apiVersion === '2'
+      ? `//Head to ${cfg.domain}${cfg.apiDocRelBasePath}/api.html#returnURLPattern to learn ways how to customize this URL`
+      : ''
+  return `
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<title>${_title}</title>
+<meta name="title" content="${_title}">
+<meta name="description" content="${_description}">
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#6d41a1" />
+
+<script src='dist/browser.min.js'></script>
+
+<script>
+  let handleSetEncoder;
+
+  ///////////////////////////
+  ////    Dapp Logic    /////
+  ///////////////////////////
+  async function main() {
+      // import {gc,encodings} from 'gamechanger'
+      const {gc,encodings} = window;
+
+      //Dapp <--> GameChanger Wallet connections can use URL redirections
+      let   actionUrl   = "";
+      let   resultObj   = undefined;
+      let   error       = ""; 
+      let   useCodec    = ${strProp(args?.encoding)};
+
+      //GameChanger Wallet is pure Web3, zero backend procesing of user data. 
+      //Dapp connector links are fully processed on end-user browsers.
+      const currentUrl  = window.location.href;
+
+      //UI components:
+      const connectForm = document.getElementById("dappConnectorBox");
+      const actionBtn   = document.getElementById("connectBtn");
+      const errorsBox   = document.getElementById("errorBox");
+      const resultsBox  = document.getElementById("resultBox");
+      const encodersBox = document.getElementById("encodersBox");
+
+      //here we register a function to change connection encoding/compression
+      handleSetEncoder=(codec)=>{
+          useCodec=codec;
+          updateUI();
+          return false;
+      }
+      async function updateUI() {
+          error="";
+          actionUrl="";
+
+
+          //GameChanger Wallet support arbitrary data returning from script execution, encoded in a redirect URL
+          ${returnURLTip}
+
+          //lets try to capture the execution results by decoding/decompressing the return URL
+          try{                
+              const resultRaw   = (new URL(currentUrl)).searchParams.get("result");
+              if(resultRaw){
+                  resultObj     = await encodings.msg.decoder(resultRaw);
+                  //avoids current url carrying latest results all the time 
+                  history.pushState({}, '', window.location.pathname);
+              }
+          }catch(err){
+              error+=\`Failed to decode results.\${err?.message||"unknown error"}\`;
+              console.error(err);
+          }
+
+
+          //This is the GCScript code, packed into a URL, that GameChanger Wallet will execute
+          //lets try to generate this connection URL by encoding/compressing the gcscript code
+          try{                
+              //GCScript (dapp connector code) will be packed inside this URL    
+              actionUrl   = await buildActionUrl(); 
+          }catch(err){
+              error+=\`Failed to build URL.\${err?.message||"unknown error"}\`
+              console.error(err);
+          }
+          
+          //Now lets render the current application state
+          if(error){
+              errorBox.innerHTML="Error: " + error;
+          }
+          if(actionUrl){
+              errorBox.innerHTML="";
+              actionBtn.href=actionUrl;
+              actionBtn.innerHTML = \`Connect\`;
+          }else{
+              actionBtn.href      = '#';
+              actionBtn.innerHTML = "Loading...";
+          }
+
+          if(resultObj){
+              resultsBox.innerHTML=JSON.stringify(resultObj,null,2);
+          }
+          encodersBox.innerHTML="Encoding: "
+          encodersBox.innerHTML+=${JSON.stringify(encodings)}
+              .map(codec=>\`<a href="#" class="a-unstyled" \${codec===useCodec?'style="font-weight:bold;""':''} onclick="return handleSetEncoder('\${codec}')">\${codec}</a>\`)
+              .join(" | ");               
+
+      }
+
+      async function buildActionUrl(args){
+          //This is the GCScript code that GameChanger Wallet will execute
+          //JSON code that will be encoded/compressed inside 'actionUrl'
+          var gcscript = ${args.input};
+          //This is a patch to adapt the return URL of the script to the origin that is hosting this html file.
+          //so this way executed scripts data exports can be captured back on dapp side
+          gcscript.returnURLPattern  = window.location.origin +  window.location.pathname ;
+          const url=await gc.encode.url({
+            input:JSON.stringify(gcscript),
+            apiVersion:${strProp(args?.apiVersion)},
+            network:${strProp(args?.network)},
+            encoding:useCodec,
+          });
+          return url;
+      }
+
+      updateUI();
+  }
+
+
+  window.onload = function () {
+      main();
+  }
+
+</script>
+
+<style>
+  body {
+      background: fixed;
+      background-image: linear-gradient(to left top, #097790, #006c8a, #006184, #00567c, #0b4b74, #184878, #26457b, #35417c, #514187, #6f3e8d, #8d378e, #ab2b89);
+      font-family: Arial, Helvetica, sans-serif;
+      color: rgb(222, 222, 222);
+      text-align: center;
+      margin: 12px;
+  }
+
+  .box {
+      background: #332f39;
+      margin: auto;
+      padding: 30px;
+      border: thin solid black;
+      border-radius: 30px;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.11), 
+        0 2px 2px rgba(0,0,0,0.2), 
+        0 4px 4px rgba(0,0,0,0.2), 
+        0 8px 8px rgba(0,0,0,0.2), 
+        0 16px 16px rgba(0,0,0,0.2), 
+        0 32px 32px rgba(0,0,0,0.15);
+      max-width: 600px;
+  }
+
+  a:link {
+      color: rgb(174, 47, 174);
+  }
+
+  /* visited link */
+  a:visited {
+      color: rgb(76, 122, 171);
+  }
+
+  /* mouse over link */
+  a:hover {
+      color: rgb(203, 64, 215);
+  }
+
+  /* selected link */
+  a:active {
+      color: blue;
+  }
+  #errorBox{
+      color: #f58000;
+      font-weight: bold;
+  }
+  .console {
+      overflow: auto;
+      text-align: left;
+      background-color: rgb(30, 30, 30);
+      color: green;
+      min-height: 200px;
+      padding: 8px;
+      border-radius: 5px;
+      box-shadow: inset 0 1px 1px rgba(0,0,0,0.11), 
+      inset 5px 2px 2px 2px rgba(0,0,0,0.2), 
+      inset 5px 4px 4px rgba(0,0,0,0.2), 
+      inset  0 8px 8px rgba(0,0,0,0.2), 
+      inset   0 16px 16px rgba(0,0,0,0.2), 
+      inset  0 32px 32px rgba(0,0,0,0.15);
+  }
+
+  .flexrow {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin: 10px;
+  }
+
+  form{
+      width: 100%;
+  }
+  .a-unstyled, .a-unstyled > *{
+      color: inherit;
+      text-decoration: none; 
+  }
+  .a-unstyled:link { color: inherit;text-decoration: none; }
+  .a-unstyled:visited { color: inherit;text-decoration: none; }
+  .a-unstyled:hover { color: inherit;text-decoration: none; }
+  .a-unstyled:active { color: inherit;text-decoration: none; }
+  .button {
+      display:inline-block;
+      background-color: #181818;
+      color: rgb(222, 222, 222);
+      border: thin solid white;
+      width: 100%;
+      margin: 10px 0px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.11), 
+        0 2px 2px rgba(0,0,0,0.2), 
+        0 4px 4px rgba(0,0,0,0.2), 
+        0 8px 8px rgba(0,0,0,0.2), 
+        0 16px 16px rgba(0,0,0,0.11);
+      background-color:#734cad60;
+  }
+  .button:hover {
+      background:linear-gradient(to bottom, #734cad 5%, #644b8a 100%);
+      background-color:#734cad;
+  }
+  .button:active {
+      position:relative;
+      top:1px;
+  }
+
+  /* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+      scrollbar-width: 10px!important;
+      scrollbar-color: gray rgb(30, 30, 30,0);
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+      width: 10px!important;
+  }
+
+  *::-webkit-scrollbar-track {
+      background: rgb(30, 30, 30,0);
+  }
+
+  *::-webkit-scrollbar-thumb {
+      background-color: gray;
+      border-radius: 10px;
+      border: 3px solid rgb(30, 30, 30,0);
+  }
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h1>${_title}</h1>
+  <p><i>${_description}</i></p>
+   
+      <div id="dappConnectorBox">
+          <a href="#" id="connectBtn" class="button a-unstyled">
+              Loading....
+          </a>
+      </div>
+
+  <pre id="errorBox"  class="errors"></pre>
+  <pre id="resultBox" class="console">Results will appear here after you connect with the wallet</pre>
+
+  <pre id="encodersBox"></pre>
+
+  <h6><i> 💪 Lets turn Cardano into the Blockchain of the Web! 💪 </i> </h6>
+
+  <i>Generated with ❤️ 
+  <br/>
+  by <b>
+      <a target="_blank" rel="noopener noreferrer" href="${origin}playground"> GameChanger Wallet Playground IDE</a>
+  </b>
+  <br/>
+   2023 </i></p>
+  </p>
+
+  <h6 class="flexrow">
+      <a target="_blank" rel="noopener noreferrer" href="${
+        cfg.contact.twitter
+      }">Twitter News</a> 
+      <a target="_blank" rel="noopener noreferrer" href="${
+        cfg.contact.discord
+      }">Discord Support</a> 
+      <a target="_blank" rel="noopener noreferrer" href="${
+        cfg.contact.youtube
+      }">Youtube Tutorials</a>            
+      <a target="_blank" rel="noopener noreferrer" href="${
+        cfg.contact.github
+      }">Github Docs and examples</a>            
+      <a target="_blank" rel="noopener noreferrer" href="${
+        cfg.contact.website
+      }">Website</a>
+  </h6>
+</div>
+</body>
+
+</html>
+
+`
+}
+var HtmlEncoder = async (args) => {
+  try {
+    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
+    const text = AstonMaartenTemplate({
+      apiVersion,
+      network,
+      encoding,
+      input,
+      qrResultType: args?.qrResultType,
+      outputFile: args?.outputFile,
+      template: args?.template,
+      styles: args?.styles
+    })
+    return `data:text/html;base64,${Buffer.from(text).toString('base64')}`
+  } catch (err) {
+    if (err instanceof Error)
+      throw new Error('URL generation failed. ' + err?.message)
+    else throw new Error('URL generation failed. ' + 'Unknown error')
+  }
+}
+// For importing on html document:
+// Install:
+//   $ npm install -s gamechanger
+//     or
+//   copy host individual file 'dist/browser.min.js'
+// Load:
+//   \\<script src='dist/browser.min.js'\\>\\</script\\>
+// Use:
+//   const {gc} = window;
+// For webpack projects like using create-react-app:
+// Install:
+//   $ npm install -s gamechanger
+// Use:
+//   import {gc} from 'gamechanger'
 
 // import urlEncoder from '../../encodings/url'
 const baseTemplate = (args) => {
@@ -10979,7 +11505,7 @@ const baseTemplate = (args) => {
     <div id='root'></div>
 
     <script type='text/babel'>
-      
+      // import {gc,encodings} from 'gamechanger'
       const {gc,encodings} = window;
 
       const App=()=>{
@@ -10997,10 +11523,8 @@ const baseTemplate = (args) => {
           const msg        = currentUrl.searchParams.get("result");
 
           if(msg){
-            _gcscript.returnURLPattern
             encodings.msg.decoder(msg)
               .then(newResult=>{
-                console.log({newResult,msg});
                 setResult(newResult);
                 //avoids current url carrying latest results all the time
                 window.history.pushState({}, '', window.location.pathname);
@@ -11064,7 +11588,7 @@ const baseTemplate = (args) => {
 var ReactEncoder = async (args) => {
   try {
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
-    return baseTemplate({
+    const text = baseTemplate({
       apiVersion,
       network,
       encoding,
@@ -11074,6 +11598,7 @@ var ReactEncoder = async (args) => {
       template: args?.template,
       styles: args?.styles
     })
+    return `data:text/html;base64,${Buffer.from(text).toString('base64')}`
   } catch (err) {
     if (err instanceof Error)
       throw new Error('URL generation failed. ' + err?.message)
@@ -11096,11 +11621,9 @@ var ReactEncoder = async (args) => {
 //   import {gc} from 'gamechanger'
 
 // import ButtonEncoder from './button'
-// import HtmlEncoder from './html'
-// import ExpressEncoder from './express'
 var snippet = {
   // button: ButtonEncoder,
-  // html: HtmlEncoder,
+  html: HtmlEncoder,
   // express: ExpressEncoder,
   react: ReactEncoder
 }
@@ -11137,15 +11660,42 @@ var _encodings = {
   qr: handler
 }
 
-//import _testDeps from './tests/deps'
 const encodings = _encodings
 const gc = _handlers
 const config = {
   usageMessage,
-  QRRenderTypes
+  QRRenderTypes,
+  GCDomains,
+  contact
 }
-//export const testDeps = _testDeps
+const _testDeps = testDeps
 //TODO: check https://github.com/knightedcodemonkey/duel
+
+var jsonUrl = () => {
+  return Promise.resolve()
+    .then(function () {
+      return jsonUrlSingle$1
+    })
+    .then((jsonUrlLib) => {
+      return jsonUrlLib.default
+    })
+}
+// export default () => {
+//   const isNode = typeof process === 'object' && typeof window !== 'object'
+//   const pathStr = isNode ? 'json-url' : '../../dist/json-url-single.js'
+//   //const useGlobal = isNode ? global : window;
+//   //WORKS: 'https://cdn.jsdelivr.net/npm/json-url@3.1.0/dist/browser/json-url-single.min.js' //'json-url/dist/browser/json-url-single.js'
+//   return import(pathStr).then((jsonUrlLib) => {
+//     //console.log({ jsonUrlLib, browser: window?.JsonUrl })
+//     if (!isNode) return (<any>window).JsonUrl
+//     return jsonUrlLib.default
+//   })
+// }
+
+var jsonUrl$1 = /*#__PURE__*/ Object.freeze({
+  __proto__: null,
+  default: jsonUrl
+})
 
 var lzma_worker = {}
 
@@ -14744,32 +15294,6 @@ var lzma = () => {
 var lzma$1 = /*#__PURE__*/ Object.freeze({
   __proto__: null,
   default: lzma
-})
-
-var jsonUrl = () => {
-  return Promise.resolve()
-    .then(function () {
-      return jsonUrlSingle$1
-    })
-    .then((jsonUrlLib) => {
-      return jsonUrlLib.default
-    })
-}
-// export default () => {
-//   const isNode = typeof process === 'object' && typeof window !== 'object'
-//   const pathStr = isNode ? 'json-url' : '../../dist/json-url-single.js'
-//   //const useGlobal = isNode ? global : window;
-//   //WORKS: 'https://cdn.jsdelivr.net/npm/json-url@3.1.0/dist/browser/json-url-single.min.js' //'json-url/dist/browser/json-url-single.js'
-//   return import(pathStr).then((jsonUrlLib) => {
-//     //console.log({ jsonUrlLib, browser: window?.JsonUrl })
-//     if (!isNode) return (<any>window).JsonUrl
-//     return jsonUrlLib.default
-//   })
-// }
-
-var jsonUrl$1 = /*#__PURE__*/ Object.freeze({
-  __proto__: null,
-  default: jsonUrl
 })
 
 /**
@@ -26084,4 +26608,4 @@ var jsonUrlSingle$1 = /*#__PURE__*/ _mergeNamespaces(
   [jsonUrlSingleExports]
 )
 
-export { config, _handlers as default, encodings, gc }
+export { _testDeps, config, _handlers as default, encodings, gc }
