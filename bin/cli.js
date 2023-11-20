@@ -170,9 +170,10 @@ export default async function main() {
         if (serve) {
           if (output.trim().startsWith('data:text/html')) {
             const indexHtml = parsedDataUri.toString('utf8')
-            if (indexHtml.trim().startsWith('<!DOCTYPE html>')) {
-              serveHtml({ indexHtml })
-            }
+            serveHtml({ indexHtml })
+            // if (indexHtml.trim().startsWith('<!DOCTYPE html>')) {
+            //   serveHtml({ indexHtml })
+            // }
           }
         }
       } else {

@@ -10890,7 +10890,7 @@ var QREncoder = async (args) => {
   }
 }
 
-var ButtonEncoder = async (args) => {
+var ButtonEncoder$1 = async (args) => {
   try {
     throw new Error('Not implemented yet')
     const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
@@ -10973,11 +10973,66 @@ var ExpressEncoder = async (args) => {
 var encode = {
   url: URLEncoder,
   qr: QREncoder,
-  button: ButtonEncoder,
+  button: ButtonEncoder$1,
   html: HtmlEncoder$1,
   express: ExpressEncoder,
   react: ReactEncoder$1
 }
+
+const baseTemplate$1 = async (args) => {
+  const urlPattern = GCDappConnUrls[args?.apiVersion][args?.network]
+  if (!urlPattern)
+    throw new Error(`Missing URL pattern for network '${args?.network || ''}'`)
+  const url = await handler$1.encoder(JSON.parse(args?.input), {
+    urlPattern,
+    encoding: args?.encoding
+  })
+  //Generated with https://www.bestcssbuttongenerator.com/
+  return `
+<!--GC BUTTON START-->
+<a href="${url}" class="gcConnectButton">Connect with GC</a>
+<style>.gcConnectButton {box-shadow: 0px 0px 0px 2px #9fb4f2;
+background:linear-gradient(to bottom, #7892c2 5%, #476e9e 100%);background-color:#7892c2;border-radius:25px;border:1px solid #4e6096;
+display:inline-block;cursor:pointer;color:#ffffff;font-family:Arial;font-size:16px;font-weight:bold;padding:12px 37px;text-decoration:none;
+text-shadow:0px 1px 0px #283966;}.gcConnectButton:hover {background:linear-gradient(to bottom, #476e9e 5%, #7892c2 100%);
+background-color:#476e9e;}.gcConnectButton:active {position:relative;top:1px;}</style>
+<!--GC BUTTON END-->
+`
+}
+var ButtonEncoder = async (args) => {
+  try {
+    const { apiVersion, network, encoding, input } = validateBuildMsgArgs(args)
+    const text = await baseTemplate$1({
+      apiVersion,
+      network,
+      encoding,
+      input,
+      qrResultType: args?.qrResultType,
+      outputFile: args?.outputFile,
+      template: args?.template,
+      styles: args?.styles
+    })
+    return `data:text/html;base64,${Buffer.from(text).toString('base64')}`
+  } catch (err) {
+    if (err instanceof Error)
+      throw new Error('URL generation failed. ' + err?.message)
+    else throw new Error('URL generation failed. ' + 'Unknown error')
+  }
+}
+// For importing on html document:
+// Install:
+//   $ npm install -s gamechanger
+//     or
+//   copy host individual file 'dist/browser.min.js'
+// Load:
+//   \\<script src='dist/browser.min.js'\\>\\</script\\>
+// Use:
+//   const {gc} = window;
+// For webpack projects like using create-react-app:
+// Install:
+//   $ npm install -s gamechanger
+// Use:
+//   import {gc} from 'gamechanger'
 
 // import { GCDappConnUrls } from '../../config'
 // import urlEncoder from '../../encodings/url'
@@ -11498,9 +11553,8 @@ var ReactEncoder = async (args) => {
 // Use:
 //   import {gc} from 'gamechanger'
 
-// import ButtonEncoder from './button'
 var snippet = {
-  // button: ButtonEncoder,
+  button: ButtonEncoder,
   html: HtmlEncoder,
   // express: ExpressEncoder,
   react: ReactEncoder
