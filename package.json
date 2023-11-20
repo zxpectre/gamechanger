@@ -1,11 +1,11 @@
 {
   "name": "gamechanger",
-  "version": "1.0.1",
+  "version": "0.0.1",
   "description": "Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)",
   "license": "MIT",
   "repository": "github:zxpectre/gamechanger",
   "author": {
-    "name": "Javier Ribó, Adriano Fiorenza",
+    "name": "Adriano Fiorenza,Javier Ribó",
     "email": "info@gamechanger.finance",
     "url": "https://gamechanger.finance/"
   },

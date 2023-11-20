@@ -2,8 +2,9 @@
 
 # GameChanger Wallet Library and CLI
 
-> Official GameChanger Wallet library and CLI for integrating it with Cardano
-> dapps and solve other tasks (https://gamechanger.finance/)
+Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)
+
+> Complete new project now compatible with GameChanger Wallet V2 and keeping some support for legacy GameChanger V1
 
 ## Install CLI
 
@@ -122,3 +123,18 @@ Use:
   import {gc} from 'gamechanger'
 
 ```
+
+
+## Resources
+- [Beta Release Notes](https://github.com/GameChangerFinance/gamechanger.wallet/blob/main/RELEASE.md)
+- [70+ open source example dapps](https://github.com/GameChangerFinance/gamechanger.wallet/blob/main/examples/README.md)
+- [Universal Dapp Connector documentation](https://github.com/GameChangerFinance/gamechanger.wallet/blob/main/DAPP_CONNECTOR.md)
+- [GCScript documentation](https://beta-wallet.gamechanger.finance/doc/api/v2/api.html)
+- [Playground IDE in GameChanger Wallet ](https://beta-wallet.gamechanger.finance/playground)
+- [Youtube Tutorials](https://www.youtube.com/@gamechanger.finance)
+- [Discord Support](https://discord.gg/vpbfyRaDKG)
+- [Twitter News](https://twitter.com/GameChangerOk)
+- [Website](https://gamechanger.finance)
+
+## License
+MIT 
