@@ -57,8 +57,7 @@ export const escapeShellArg = (arg: string) =>
 
 export const usageMessage = `
 GameChanger Wallet CLI:
-	Harness the power of Cardano with this simple dApp connector generator for GameChanger Wallet.
-	Build GCscripts, JSON-based scripts that gets packed into ready to use URL dApp connectors!
+	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)
 
 Usage
 	$ ${cliName} [network] [action] [subaction]

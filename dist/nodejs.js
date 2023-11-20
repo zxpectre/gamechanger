@@ -9864,8 +9864,7 @@ const escapeShellArg = (arg) =>
   `'${arg.replace(/'/g, "'\\''")}'`
 const usageMessage = `
 GameChanger Wallet CLI:
-	Harness the power of Cardano with this simple dApp connector generator for GameChanger Wallet.
-	Build GCscripts, JSON-based scripts that gets packed into ready to use URL dApp connectors!
+	Official GameChanger Wallet library and CLI for integrating it with Cardano dapps and solve other tasks (https://gamechanger.finance/)
 
 Usage
 	$ ${cliName} [network] [action] [subaction]
@@ -10089,12 +10088,12 @@ const handler$5 = {
     const compressed = await lzmaCodec.compress(packed)
     //const encoded = (await import(/* webpackChunkName: "'urlsafe-base64" */ 'urlsafe-base64')).encode(compressed);
     const encoded = encode$1(Buffer$1.from(compressed))
-    console.log({
-      packed,
-      compressed,
-      encoded,
-      altern: Buffer$1.from(compressed).toString('base64')
-    })
+    // console.log({
+    //   packed,
+    //   compressed,
+    //   encoded,
+    //   altern: Buffer.from(compressed).toString('base64')
+    // })
     return encoded
   },
   decoder: async (msg /*,_options?:any*/) => {
