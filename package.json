@@ -33,13 +33,14 @@
     "clean": "rm -rf dist/",
     "bundle-deps": "cp node_modules/easyqrcodejs/dist/easy.qrcode.min.js dist/easy.qrcode.min.js && cp node_modules/json-url/dist/browser/json-url-single.js dist/json-url-single.js",
     "build-nodejs": "npm run lint && rollup -c rollup.nodejs.config.js && cp dist/nodejs.cjs dist/nodejs.js",
-    "build-browser-min": "npm run lint && rollup -c rollup.browser-min.config.js && npm run size && npm run bundle-deps",
-    "build-browser": "npm run lint && rollup -c rollup.browser.config.js && npm run bundle-deps",
+    "build-browser-min": "npm run lint && rollup -c rollup.browser-min.config.js && npm run size",
+    "build-browser": "npm run lint && rollup -c rollup.browser.config.js",
     "build": "npm run build-nodejs && npm run build-browser && npm run build-browser-min",
     "size": "gzip-size dist/browser.min.js --include-original",
     "test": "npm run build-browser-min && http-server . -c-1 -o test/"
   },
   "dependencies": {
+    "@rollup/plugin-babel": "^6.0.4",
     "canvas": "^2.11.2",
     "data-uri-to-buffer": "^3.0.1",
     "data-uri-to-file": "^0.1.8",
@@ -79,12 +80,16 @@
     "typescript": "^5.2.2"
   },
   "type": "module",
-  "exports": "./dist/browser.js",
+  "exports": {
+    "import": "./dist/browser.js",
+    "require": "./dist/nodejs.js",
+    "default": "./dist/browser.js"
+  },
   "bin": {
     "gamechanger-cli": "./bin/cli.js"
   },
   "files": [
-    "bin/",
+    "bin/cli.js",
     "dist/"
   ],
   "jsdelivr": "./dist/browser.min.js",

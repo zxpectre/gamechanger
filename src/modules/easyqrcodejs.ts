@@ -9,7 +9,9 @@ export default async () => {
   /**
    * Trick:
    * by using this dynamic argument on `import(pathStr)`
-   * I prevent rollup/typescript to detect and auto-process the imported js files
+   * I prevent rollup commonJs plugin to detect and auto-process the imported js files
+   *
+   * Excluding the files on rollup configs is producing bugs elsewhere. This solves it well for all targets
    */
   const pathStr = isNode
     ? 'easyqrcodejs-nodejs'
@@ -84,7 +86,7 @@ export default async () => {
     //const _QRCode = await import('easyqrcodejs/src/easy.qrcode').then(() => {
     //WORKS but nodejs version breaks it on browser?
     //const _QRCode = await import('easyqrcodejs').then(() => {
-    const _QRCode = await import(pathStr).then(() => {
+    const _QRCode = await import('easyqrcodejs').then(() => {
       return (<any>window)?.QRCode
     })
 

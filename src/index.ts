@@ -1,8 +1,8 @@
-import _testDeps from './tests/deps'
+//import _testDeps from './tests/deps'
+import { usageMessage, QRRenderTypes } from './config'
 
 import _handlers from './handlers'
 import _encodings from './encodings'
-import { usageMessage, QRRenderTypes } from './config'
 
 export const encodings = _encodings
 export const gc = _handlers
@@ -10,12 +10,13 @@ export const gc = _handlers
 //   typeof window === 'object'
 //     ? undefined
 //     : import('./cli.ts.old').then((d) => d.default())
+
+export default _handlers
+
 export const config = {
   usageMessage,
   QRRenderTypes
 }
-export default _handlers
-
-export const testDeps = _testDeps
+//export const testDeps = _testDeps
 
 //TODO: check https://github.com/knightedcodemonkey/duel

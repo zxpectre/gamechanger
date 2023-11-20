@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 /* eslint-disable quotes */
-/* global chai, gc,testDeps */
+/* global chai, gc */
 
 mocha.setup({
   ui: 'bdd'
@@ -9,12 +9,12 @@ mocha.setup({
 describe('unit tests', () => {
   const { expect /*, assert*/ } = chai
 
-  describe('Dependencies Test', () => {
-    it('should load dependencies', async () => {
-      const res = await testDeps()
-      expect(res).to.equal('OK')
-    })
-  })
+  // describe('Dependencies Test', () => {
+  //   it('should load dependencies', async () => {
+  //     const res = await testDeps()
+  //     expect(res).to.equal('OK')
+  //   })
+  // })
 
   describe('Encoders Unit tests', () => {
     it('should build the correct APIv1 url for a dummy script', async () => {

@@ -44,6 +44,7 @@ export default {
       ]
     }),
     typescript({
+      sourceMap: true,
       tsconfig: './tsconfig.json',
       exclude: ['./src/assets/*', './bin/*'],
       compilerOptions: {

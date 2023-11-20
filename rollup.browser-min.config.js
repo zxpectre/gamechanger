@@ -14,7 +14,7 @@ export default {
   input: 'src/index.ts',
   output: {
     file: 'dist/browser.min.js',
-    format: 'umd',
+    format: 'iife',
     name: 'window',
     extend: true,
     inlineDynamicImports: true //Solves: Invalid value "umd" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds.
